@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,26 +20,22 @@ const Cadastro = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (cnpj && agencia && cidade && usuarios && email && password) {
-      localStorage.setItem("konzup_user", JSON.stringify({ email, agencia }));
-      toast({
-        title: "Conta criada com sucesso!",
-        description: "Bem-vindo ao Konzup Hub.",
-      });
-      navigate("/dashboard");
-    } else {
-      toast({
-        title: "Erro no cadastro",
-        description: "Preencha todos os campos.",
-        variant: "destructive",
-      });
-    }
+    // Aceita qualquer valor ou campos vazios
+    localStorage.setItem("konzup_user", JSON.stringify({ 
+      email: email || "demo@konzup.com", 
+      agencia: agencia || "Agência Demo" 
+    }));
+    toast({
+      title: "Conta de demonstração criada! Explore o Konzup Hub.",
+    });
+    navigate("/dashboard");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
+        <div className="text-center space-y-4">
+          <Badge variant="secondary" className="mb-2">🎭 Ambiente de demonstração</Badge>
           <h1 className="text-3xl font-bold text-primary">Konzup Hub</h1>
           <p className="mt-2 text-muted-foreground">Crie sua conta</p>
         </div>
@@ -53,7 +50,6 @@ const Cadastro = () => {
                 value={cnpj}
                 onChange={(e) => setCnpj(e.target.value)}
                 placeholder="00.000.000/0000-00"
-                required
               />
             </div>
 
@@ -65,7 +61,6 @@ const Cadastro = () => {
                 value={agencia}
                 onChange={(e) => setAgencia(e.target.value)}
                 placeholder="Sua Agência"
-                required
               />
             </div>
 
@@ -77,13 +72,12 @@ const Cadastro = () => {
                 value={cidade}
                 onChange={(e) => setCidade(e.target.value)}
                 placeholder="São Paulo"
-                required
               />
             </div>
 
             <div>
               <Label htmlFor="usuarios">Número de usuários</Label>
-              <Select value={usuarios} onValueChange={setUsuarios} required>
+              <Select value={usuarios} onValueChange={setUsuarios}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
@@ -97,14 +91,13 @@ const Cadastro = () => {
             </div>
 
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">E-mail</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
-                required
               />
             </div>
 
@@ -116,7 +109,6 @@ const Cadastro = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                required
               />
             </div>
           </div>

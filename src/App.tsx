@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
+import Termos from "./pages/Termos";
+import Privacidade from "./pages/Privacidade";
 import NotFound from "./pages/NotFound";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 import Hoje from "./pages/dashboard/Hoje";
@@ -28,9 +30,12 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/termos" element={<Termos />} />
+          <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Hoje />} />
             <Route path="casos" element={<Casos />} />
+            <Route path="caso/:id" element={<div className="p-6">Detalhes do caso (em construção)</div>} />
             <Route path="importar" element={<Importar />} />
             <Route path="modelos" element={<Modelos />} />
             <Route path="relatorios" element={<Relatorios />} />
