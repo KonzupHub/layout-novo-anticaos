@@ -11,6 +11,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
 const items = [
   { title: "Dia de hoje", url: "/dashboard", icon: Calendar },
@@ -45,9 +46,13 @@ export function AppSidebar() {
                       to={item.url}
                       end={item.url === "/dashboard"}
                       className={({ isActive }) =>
-                        isActive
-                          ? "bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
-                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        cn(
+                          "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                          "w-full text-left",
+                          isActive
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                            : "text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        )
                       }
                     >
                       <item.icon className="h-4 w-4" />
