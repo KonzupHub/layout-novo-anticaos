@@ -26,16 +26,16 @@ export function AppSidebar() {
   const { open } = useSidebar();
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarContent>
-        <div className="px-4 py-6">
+    <Sidebar collapsible="icon" className="border-r border-border">
+      <SidebarContent className="bg-sidebar-background">
+        <div className="px-4 py-6 border-b border-border">
           <h2 className={`font-bold text-primary transition-all ${open ? "text-xl" : "text-sm"}`}>
             {open ? "Konzup Hub" : "K"}
           </h2>
         </div>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground px-4">Menu Principal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -46,8 +46,8 @@ export function AppSidebar() {
                       end={item.url === "/dashboard"}
                       className={({ isActive }) =>
                         isActive
-                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                          : ""
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       }
                     >
                       <item.icon className="h-4 w-4" />
