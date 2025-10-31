@@ -46,7 +46,7 @@ const Index = () => {
       </header>
 
       {/* Hero Section - Gradiente violeta → marinho */}
-      <section className="relative -mt-16 pt-32 pb-20 px-4 bg-gradient-to-br from-primary/10 via-primary/5 to-background overflow-hidden">
+      <section className="relative -mt-16 pt-32 pb-20 px-4 bg-gradient-to-br from-primary/20 via-primary/15 to-primary/5 overflow-hidden shadow-inner">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="relative max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
           <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary to-[#0f1729] bg-clip-text text-transparent">
@@ -79,22 +79,22 @@ const Index = () => {
 
       <main className="space-y-0">
         {/* Seção Prova - Background gradiente sutil */}
-        <section className="py-20 px-4 bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5">
+        <section className="py-20 px-4 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10">
           <div className="container mx-auto max-w-5xl">
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="p-8 text-center space-y-4 border-t-4 border-t-primary shadow-lg hover:shadow-xl transition-all hover:scale-105 bg-gradient-to-b from-background to-muted/20">
+              <Card className="p-8 text-center space-y-4 border-t-4 border-t-primary shadow-xl hover:shadow-2xl transition-all hover:scale-105 bg-gradient-to-b from-background to-muted/50">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto">
                   <Clock className="w-10 h-10 text-primary" />
                 </div>
                 <p className="font-semibold text-lg">Menos horas perdidas na operação</p>
               </Card>
-              <Card className="p-8 text-center space-y-4 border-t-4 border-t-primary shadow-lg hover:shadow-xl transition-all hover:scale-105 bg-gradient-to-b from-background to-muted/20">
+              <Card className="p-8 text-center space-y-4 border-t-4 border-t-primary shadow-xl hover:shadow-2xl transition-all hover:scale-105 bg-gradient-to-b from-background to-muted/50">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto">
                   <CheckCircle className="w-10 h-10 text-primary" />
                 </div>
                 <p className="font-semibold text-lg">Prazos da ANAC cumpridos</p>
               </Card>
-              <Card className="p-8 text-center space-y-4 border-t-4 border-t-primary shadow-lg hover:shadow-xl transition-all hover:scale-105 bg-gradient-to-b from-background to-muted/20">
+              <Card className="p-8 text-center space-y-4 border-t-4 border-t-primary shadow-xl hover:shadow-2xl transition-all hover:scale-105 bg-gradient-to-b from-background to-muted/50">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto">
                   <FileText className="w-10 h-10 text-primary" />
                 </div>
@@ -105,7 +105,7 @@ const Index = () => {
         </section>
 
         {/* Como Funciona - Timeline visual */}
-        <section id="como-funciona" className="py-20 px-4 bg-background">
+        <section id="como-funciona" className="py-20 px-4 bg-muted/30">
           <div className="container mx-auto max-w-5xl space-y-12">
             <div className="text-center">
               <h3 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-[#0f1729] bg-clip-text text-transparent">
@@ -157,9 +157,9 @@ const Index = () => {
         <Separator className="my-0" />
 
         {/* Exemplo de Relatório */}
-        <section id="exemplo-relatorio" className="py-20 px-4 bg-muted/20">
+        <section id="exemplo-relatorio" className="py-20 px-4 bg-muted/40">
           <div className="container mx-auto max-w-3xl">
-            <Card className="p-10 shadow-xl hover:shadow-2xl transition-all border-t-4 border-t-primary bg-gradient-to-br from-background via-background to-muted/30">
+            <Card className="p-10 shadow-2xl hover:shadow-2xl transition-all border-t-4 border-t-primary bg-gradient-to-br from-background via-background to-muted/50">
               <div className="text-center space-y-6">
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto">
                   <FileText className="w-12 h-12 text-primary" />
@@ -194,7 +194,7 @@ const Index = () => {
         <Separator className="my-0" />
 
         {/* Resultados */}
-        <section className="py-20 px-4 bg-muted/20">
+        <section className="py-20 px-4 bg-gradient-to-r from-muted/30 via-primary/5 to-muted/30">
           <div className="container mx-auto max-w-5xl space-y-12">
             <div className="text-center">
               <h3 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-[#0f1729] bg-clip-text text-transparent">
@@ -203,19 +203,19 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="p-10 text-center space-y-4 shadow-lg hover:shadow-xl transition-all hover:scale-105 border-l-4 border-l-primary bg-gradient-to-br from-background to-muted/30">
+              <Card className="p-10 text-center space-y-4 shadow-xl hover:shadow-2xl transition-all hover:scale-105 border-l-4 border-l-primary bg-gradient-to-br from-background to-muted/60">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto">
                   <Clock className="w-10 h-10 text-primary" />
                 </div>
                 <p className="text-lg font-semibold">Horas poupadas por semana</p>
               </Card>
-              <Card className="p-10 text-center space-y-4 shadow-lg hover:shadow-xl transition-all hover:scale-105 border-l-4 border-l-primary bg-gradient-to-br from-background to-muted/30">
+              <Card className="p-10 text-center space-y-4 shadow-xl hover:shadow-2xl transition-all hover:scale-105 border-l-4 border-l-primary bg-gradient-to-br from-background to-muted/60">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto">
                   <CheckCircle className="w-10 h-10 text-primary" />
                 </div>
                 <p className="text-lg font-semibold">Casos encerrados dentro do prazo</p>
               </Card>
-              <Card className="p-10 text-center space-y-4 shadow-lg hover:shadow-xl transition-all hover:scale-105 border-l-4 border-l-primary bg-gradient-to-br from-background to-muted/30">
+              <Card className="p-10 text-center space-y-4 shadow-xl hover:shadow-2xl transition-all hover:scale-105 border-l-4 border-l-primary bg-gradient-to-br from-background to-muted/60">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto">
                   <TrendingUp className="w-10 h-10 text-primary" />
                 </div>
@@ -228,7 +228,7 @@ const Index = () => {
         <Separator className="my-0" />
 
         {/* FAQ */}
-        <section className="py-20 px-4 bg-primary/5">
+        <section className="py-20 px-4 bg-primary/10">
           <div className="container mx-auto max-w-3xl space-y-8">
             <h3 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-primary to-[#0f1729] bg-clip-text text-transparent">
               Perguntas frequentes
@@ -271,7 +271,7 @@ const Index = () => {
         <Separator className="my-0" />
 
         {/* O Que Vem Por Aí - Gradiente + Glass morphism */}
-        <section className="py-20 px-4 bg-gradient-to-br from-[#0f1729]/10 via-primary/5 to-[#0f1729]/10">
+        <section className="py-20 px-4 bg-gradient-to-br from-[#0f1729]/20 via-primary/15 to-[#0f1729]/20">
           <div className="container mx-auto max-w-5xl space-y-10">
             <div className="text-center">
               <Badge variant="secondary" className="mb-4 animate-pulse shadow-md">Em breve</Badge>
@@ -281,28 +281,28 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
-              <Card className="p-8 space-y-4 backdrop-blur-sm bg-background/80 border-2 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              <Card className="p-8 space-y-4 backdrop-blur-sm bg-background/90 border-2 shadow-2xl hover:shadow-2xl transition-all hover:scale-105">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
                   <Globe className="w-8 h-8 text-primary" />
                 </div>
                 <h4 className="font-bold text-xl">Portal de status para cliente B2B</h4>
               </Card>
               
-              <Card className="p-8 space-y-4 backdrop-blur-sm bg-background/80 border-2 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              <Card className="p-8 space-y-4 backdrop-blur-sm bg-background/90 border-2 shadow-2xl hover:shadow-2xl transition-all hover:scale-105">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
                   <TrendingUp className="w-8 h-8 text-primary" />
                 </div>
                 <h4 className="font-bold text-xl">Indicadores de eficiência e venda preservada</h4>
               </Card>
               
-              <Card className="p-8 space-y-4 backdrop-blur-sm bg-background/80 border-2 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              <Card className="p-8 space-y-4 backdrop-blur-sm bg-background/90 border-2 shadow-2xl hover:shadow-2xl transition-all hover:scale-105">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
                   <LinkIcon className="w-8 h-8 text-primary" />
                 </div>
                 <h4 className="font-bold text-xl">Conectores opcionais com consolidadoras</h4>
               </Card>
               
-              <Card className="p-8 space-y-4 backdrop-blur-sm bg-background/80 border-2 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              <Card className="p-8 space-y-4 backdrop-blur-sm bg-background/90 border-2 shadow-2xl hover:shadow-2xl transition-all hover:scale-105">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
                   <Chrome className="w-8 h-8 text-primary" />
                 </div>
@@ -310,7 +310,7 @@ const Index = () => {
               </Card>
             </div>
 
-            <Card className="p-10 max-w-md mx-auto shadow-2xl border-t-4 border-t-primary bg-gradient-to-br from-background to-muted/30">
+            <Card className="p-10 max-w-md mx-auto shadow-2xl border-t-4 border-t-primary bg-gradient-to-br from-background to-muted/50">
               <form onSubmit={handleNotifyMe} className="space-y-4">
                 <h4 className="font-bold text-xl text-center">Quero ser avisado</h4>
                 <Input
