@@ -10,7 +10,7 @@ export const DashboardLayout = () => {
         <AppSidebar />
         <div className="flex-1 flex flex-col">
           <DashboardHeader />
-          <main className="flex-1 p-6 bg-background">
+          <main className="flex-1 p-6 bg-gradient-to-br from-muted/20 via-background to-primary/5">
             <Outlet />
           </main>
         </div>

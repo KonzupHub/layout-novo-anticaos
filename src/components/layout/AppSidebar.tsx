@@ -29,8 +29,14 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarContent className="bg-sidebar-background">
-        <div className="px-4 py-6 border-b border-border">
-          <h2 className={`font-bold text-primary transition-all ${open ? "text-xl" : "text-sm"}`}>
+        <div className={cn(
+          "px-4 py-6 border-b border-border bg-gradient-to-r from-primary/10 to-accent/10 transition-all",
+          open ? "" : "px-2"
+        )}>
+          <h2 className={cn(
+            "font-bold text-primary transition-all",
+            open ? "text-xl" : "text-sm text-center"
+          )}>
             {open ? "Konzup Hub" : "K"}
           </h2>
         </div>
@@ -47,10 +53,10 @@ export function AppSidebar() {
                       end={item.url === "/dashboard"}
                       className={({ isActive }) =>
                         cn(
-                          "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                          "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all relative",
                           "w-full text-left",
                           isActive
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                            ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:from-primary/90 hover:to-primary/70 shadow-sm before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-primary-foreground before:rounded-l-md"
                             : "text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                         )
                       }

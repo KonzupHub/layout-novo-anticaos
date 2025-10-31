@@ -20,7 +20,7 @@ const Hoje = () => {
 
       {/* Cartões de Resumo */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="bg-gradient-to-br from-orange-50 to-background border-l-4 border-l-orange-500 dark:from-orange-950/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Vence hoje</CardTitle>
             <AlertCircle className="h-4 w-4 text-orange-600" />
@@ -31,7 +31,7 @@ const Hoje = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-yellow-50 to-background border-l-4 border-l-yellow-500 dark:from-yellow-950/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Em 24 horas</CardTitle>
             <Clock className="h-4 w-4 text-yellow-600" />
@@ -42,7 +42,7 @@ const Hoje = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-green-50 to-background border-l-4 border-l-green-500 dark:from-green-950/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Novos na semana</CardTitle>
             <Plus className="h-4 w-4 text-green-600" />
@@ -55,7 +55,7 @@ const Hoje = () => {
       </div>
 
       {/* Lista de Casos */}
-      <Card>
+      <Card className="bg-gradient-to-b from-background to-muted/30 border-t-4 border-t-primary shadow-lg">
         <CardHeader>
           <CardTitle>Prioridades de hoje</CardTitle>
           <CardDescription>Casos que precisam de acompanhamento</CardDescription>
