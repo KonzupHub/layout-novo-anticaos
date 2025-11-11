@@ -4,31 +4,37 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      return;
-    }
+    // Aceita qualquer valor ou campos vazios
+    localStorage.setItem("konzup_user", JSON.stringify({ email: email || "demo@konzup.com" }));
+    toast({
+      title: "Bem-vindo à demonstração do Konzup Hub!",
+    });
+    navigate("/dashboard");
+  };
 
-    setLoading(true);
-    try {
-      await login(email, password);
+  const handleDemoLogin = () => {
+    setEmail("demo@konzup.com");
+    setPassword("demo");
+    
+    // Login imediato
+    setTimeout(() => {
+      localStorage.setItem("konzup_user", JSON.stringify({ email: "demo@konzup.com" }));
+      toast({
+        title: "Bem-vindo à demonstração do Konzup Hub!",
+      });
       navigate("/dashboard");
-    } catch (error) {
-      // Erro já tratado no contexto
-    } finally {
-      setLoading(false);
-    }
+    }, 100);
   };
 
   return (
@@ -74,9 +80,20 @@ const Login = () => {
             </Link>
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Entrando..." : "Entrar"}
-          </Button>
+          <div className="space-y-3">
+            <Button type="submit" className="w-full">
+              Entrar
+            </Button>
+
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="w-full"
+              onClick={handleDemoLogin}
+            >
+              Entrar na demonstração
+            </Button>
+          </div>
 
           <p className="text-center text-sm text-muted-foreground">
             Não tem uma conta?{" "}

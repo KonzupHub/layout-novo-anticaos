@@ -3,49 +3,39 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAuth } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
 
 const Cadastro = () => {
   const [cnpj, setCnpj] = useState("");
   const [agencia, setAgencia] = useState("");
   const [cidade, setCidade] = useState("");
-  const [nome, setNome] = useState("");
+  const [usuarios, setUsuarios] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password || !cnpj || !agencia || !cidade || !nome) {
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await signup({
-        email,
-        senha: password,
-        cnpj,
-        nomeAgencia: agencia,
-        cidade,
-        nome,
-      });
-      navigate("/dashboard");
-    } catch (error) {
-      // Erro já tratado no contexto
-    } finally {
-      setLoading(false);
-    }
+    // Aceita qualquer valor ou campos vazios
+    localStorage.setItem("konzup_user", JSON.stringify({ 
+      email: email || "demo@konzup.com", 
+      agencia: agencia || "Agência Demo" 
+    }));
+    toast({
+      title: "Conta de demonstração criada! Explore o Konzup Hub.",
+    });
+    navigate("/dashboard");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-4">
+          <Badge variant="secondary" className="mb-2">🎭 Ambiente de demonstração</Badge>
           <h1 className="text-3xl font-bold text-primary">Konzup Hub</h1>
           <p className="mt-2 text-muted-foreground">Crie sua conta</p>
         </div>
@@ -86,14 +76,18 @@ const Cadastro = () => {
             </div>
 
             <div>
-              <Label htmlFor="nome">Nome completo</Label>
-              <Input
-                id="nome"
-                type="text"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                placeholder="Seu nome completo"
-              />
+              <Label htmlFor="usuarios">Número de usuários</Label>
+              <Select value={usuarios} onValueChange={setUsuarios}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1-5">1-5 usuários</SelectItem>
+                  <SelectItem value="6-10">6-10 usuários</SelectItem>
+                  <SelectItem value="11-20">11-20 usuários</SelectItem>
+                  <SelectItem value="20+">Mais de 20 usuários</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
@@ -119,8 +113,8 @@ const Cadastro = () => {
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Criando conta..." : "Criar conta"}
+          <Button type="submit" className="w-full">
+            Criar conta
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">

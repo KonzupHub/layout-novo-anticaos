@@ -41,7 +41,7 @@ const Privacidade = () => {
                 <li>Gestão e acompanhamento de casos</li>
                 <li>Geração de relatórios e documentos</li>
                 <li>Comunicação com clientes e fornecedores</li>
-                <li>Atender prazos combinados e normas da ANAC</li>
+                <li>Cumprimento de prazos e normas da ANAC</li>
               </ul>
             </section>
 

@@ -35,7 +35,8 @@ const Termos = () => {
               <h3 className="text-xl font-semibold mb-3">2. Uso da Plataforma</h3>
               <p className="text-muted-foreground">
                 A Konzup Hub é uma plataforma de gestão de pós-venda para incidentes aéreos. 
-                Ao usar a plataforma, você concorda em utilizá-la de acordo com a lei e as normas da ANAC.
+                Ao usar a plataforma, você concorda em utilizá-la de acordo com a legislação vigente 
+                e as normas da ANAC.
               </p>
             </section>
 
@@ -51,7 +52,7 @@ const Termos = () => {
               <h3 className="text-xl font-semibold mb-3">4. Limitação de Responsabilidade</h3>
               <p className="text-muted-foreground">
                 A Konzup Hub fornece ferramentas para organização e gestão, mas a responsabilidade 
-                final sobre o atendimento aos prazos combinados e estar de acordo com a lei permanece com o usuário.
+                final sobre o atendimento aos prazos e conformidade legal permanece com o usuário.
               </p>
             </section>
 

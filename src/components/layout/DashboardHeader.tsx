@@ -11,22 +11,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useAuth } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
 
 export const DashboardHeader = () => {
   const navigate = useNavigate();
-  const { logout, user } = useAuth();
+  const { toast } = useToast();
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/login");
-    } catch (error) {
-      // Erro já tratado no contexto
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("konzup_user");
+    toast({
+      title: "Logout realizado",
+      description: "Até logo!",
+    });
+    navigate("/login");
   };
-
-  const userInitial = user?.email?.[0].toUpperCase() || "U";
 
   return (
     <header className="border-b bg-gradient-to-r from-primary/5 via-background to-accent/5">
@@ -59,7 +57,7 @@ export const DashboardHeader = () => {
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-colors">
                 <Avatar>
                   <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-                    {userInitial}
+                    U
                   </AvatarFallback>
                 </Avatar>
               </Button>
