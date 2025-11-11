@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Clock, CheckCircle, FileText, Mail, ListChecks, FileCheck, Globe, TrendingUp, Link as LinkIcon, Chrome, Download, Plane, Users, Luggage } from "lucide-react";
+import { Clock, CheckCircle, FileText, Mail, ListChecks, FileCheck, Globe, TrendingUp, Link as LinkIcon, Chrome, Plane, Users, Luggage } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -407,17 +407,6 @@ const Index = () => {
                                 Resultado Final
                               </h4>
                               <p className="text-sm">{example.result}</p>
-                            </div>
-
-                            {/* Botão de Download */}
-                            <div className="flex justify-center pt-4 animate-fade-in" style={{ animationDelay: '900ms' }}>
-                              <Button 
-                                variant="outline" 
-                                className="gap-2 hover:scale-105 transition-all hover:bg-primary hover:text-primary-foreground"
-                              >
-                                <Download className="w-4 h-4" />
-                                Baixar PDF deste exemplo
-                              </Button>
                             </div>
                           </div>
                         </TabsContent>
