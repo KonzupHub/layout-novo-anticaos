@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
+// import { useAuth } from "@/lib/auth"; // Desabilitado temporariamente
 import { getTipoBadge, getStatusBadge } from "@/lib/mockCases";
 import type { Case, UpdateCaseDto } from "@/types/shared";
 import { ArrowLeft, FileText, Save } from "lucide-react";
@@ -23,7 +23,7 @@ import {
 const CasoDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const token = null; // Mock temporário - substituir quando implementar auth real
   const { toast } = useToast();
   const [caso, setCaso] = useState<Case | null>(null);
   const [loading, setLoading] = useState(true);
