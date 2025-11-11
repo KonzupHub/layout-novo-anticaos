@@ -1,0 +1,6 @@
+passageiro,localizador,voo,fornecedor,tipo,prazo,status,responsavel,notas
+Maria Silva,ABC123,LA1234,LATAM,atraso,Hoje 18h,em_andamento,João Santos,Caso de teste
+Pedro Costa,XYZ789,GOL5678,GOL,cancelamento,Amanhã 10h,aguardando_resposta,Ana Lima,Teste CSV
+José Oliveira,DEF456,LA9012,LATAM,overbooking,Hoje 20h,documentacao_pendente,Maria Silva,Divergência esperada
+Ana Paula,GHI789,LA3456,LATAM,mudanca_voo,Amanhã 14h,em_andamento,Carlos Mendes,Caso válido
+

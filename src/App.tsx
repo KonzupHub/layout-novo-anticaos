@@ -1,0 +1,79 @@
+import React from "react";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./lib/auth";
+import Index from "./pages/Index";
+import Login from "./pages/Login";
+import Cadastro from "./pages/Cadastro";
+import Termos from "./pages/Termos";
+import Privacidade from "./pages/Privacidade";
+import NotFound from "./pages/NotFound";
+import { DashboardLayout } from "./components/layout/DashboardLayout";
+import Hoje from "./pages/dashboard/Hoje";
+import Casos from "./pages/dashboard/Casos";
+import CasoDetail from "./pages/dashboard/CasoDetail";
+import Importar from "./pages/dashboard/Importar";
+import Modelos from "./pages/dashboard/Modelos";
+import Relatorios from "./pages/dashboard/Relatorios";
+import Conta from "./pages/dashboard/Conta";
+import Ajuda from "./pages/dashboard/Ajuda";
+
+const queryClient = new QueryClient();
+
+// Componente para proteger rotas do dashboard
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/termos" element={<Termos />} />
+            <Route path="/privacidade" element={<Privacidade />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Hoje />} />
+              <Route path="casos" element={<Casos />} />
+              <Route path="caso/:id" element={<CasoDetail />} />
+              <Route path="importar" element={<Importar />} />
+              <Route path="modelos" element={<Modelos />} />
+              <Route path="relatorios" element={<Relatorios />} />
+              <Route path="conta" element={<Conta />} />
+              <Route path="ajuda" element={<Ajuda />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
+  </QueryClientProvider>
+);
+
+export default App;
