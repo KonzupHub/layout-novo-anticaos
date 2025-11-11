@@ -6,9 +6,128 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Clock, CheckCircle, FileText, Mail, ListChecks, FileCheck, Globe, TrendingUp, Link as LinkIcon, Chrome } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Clock, CheckCircle, FileText, Mail, ListChecks, FileCheck, Globe, TrendingUp, Link as LinkIcon, Chrome, Download, Plane, Users, Luggage } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+
+const caseExamples = [
+  {
+    id: "cancelamento",
+    title: "Cancelamento de Voo",
+    company: "Viagens Horizonte Ltda",
+    caseNumber: "#2025-001",
+    type: "Cancelamento de voo",
+    airline: "Azul Linhas Aéreas",
+    flight: "AD 4321",
+    date: "10/01/2025",
+    route: "GRU → SSA",
+    client: "Maria Silva Santos",
+    cpf: "123.456.789-00",
+    email: "maria.silva@email.com",
+    timeline: [
+      { time: "10/01 08:30", event: "Recebimento do e-mail de cancelamento" },
+      { time: "10/01 09:15", event: "Caso aberto automaticamente" },
+      { time: "10/01 10:00", event: "Carta de reclamação enviada" },
+      { time: "12/01 14:20", event: "Reacomodação confirmada para voo AD 4325" },
+      { time: "15/01 11:00", event: "Caso encerrado - Cliente satisfeito" }
+    ],
+    result: "Caso resolvido com sucesso. Cliente reacomodado em voo alternativo sem custos adicionais.",
+    icon: Plane
+  },
+  {
+    id: "atraso",
+    title: "Atraso Superior a 4h",
+    company: "TurExpresso Viagens",
+    caseNumber: "#2025-002",
+    type: "Atraso de voo",
+    airline: "LATAM Airlines",
+    flight: "LA 3456",
+    date: "12/01/2025",
+    route: "CGH → REC",
+    client: "João Pedro Costa",
+    cpf: "987.654.321-00",
+    email: "joao.costa@email.com",
+    timeline: [
+      { time: "12/01 14:00", event: "Notificação de atraso de 5h recebida" },
+      { time: "12/01 14:10", event: "Caso aberto - prazo ANAC ativado" },
+      { time: "12/01 15:00", event: "Assistência material providenciada (voucher)" },
+      { time: "12/01 16:30", event: "Cliente informado sobre compensação" },
+      { time: "13/01 09:00", event: "Embarque realizado - Caso encerrado" }
+    ],
+    result: "Assistência material oferecida conforme Resolução 400. Cliente embarcou no dia seguinte com compensação.",
+    icon: Clock
+  },
+  {
+    id: "overbooking",
+    title: "Overbooking / Preterição",
+    company: "Mundial Turismo",
+    caseNumber: "#2025-003",
+    type: "Preterição de embarque",
+    airline: "GOL Linhas Aéreas",
+    flight: "G3 1234",
+    date: "08/01/2025",
+    route: "SDU → BSB",
+    client: "Ana Carolina Mendes",
+    cpf: "456.789.123-00",
+    email: "ana.mendes@email.com",
+    timeline: [
+      { time: "08/01 18:00", event: "Cliente impedido de embarcar (overbooking)" },
+      { time: "08/01 18:05", event: "Caso aberto - prioridade ALTA" },
+      { time: "08/01 18:20", event: "Reacomodação imediata no próximo voo (1h)" },
+      { time: "08/01 18:30", event: "Compensação financeira solicitada" },
+      { time: "10/01 10:00", event: "Compensação confirmada - Caso encerrado" }
+    ],
+    result: "Cliente reacomodada em menos de 1h. Compensação financeira de R$ 1.000 aprovada pela cia aérea.",
+    icon: Users
+  },
+  {
+    id: "mudanca-aeronave",
+    title: "Mudança de Aeronave",
+    company: "Fly Tours",
+    caseNumber: "#2025-004",
+    type: "Mudança de equipamento",
+    airline: "Azul Linhas Aéreas",
+    flight: "AD 2789",
+    date: "05/01/2025",
+    route: "VCP → FOR",
+    client: "Carlos Eduardo Lima",
+    cpf: "321.654.987-00",
+    email: "carlos.lima@email.com",
+    timeline: [
+      { time: "05/01 06:00", event: "Notificação de mudança de aeronave" },
+      { time: "05/01 06:15", event: "Caso aberto - verificação de assentos" },
+      { time: "05/01 07:00", event: "Confirmação de assento equivalente" },
+      { time: "05/01 08:30", event: "Embarque realizado sem problemas" },
+      { time: "05/01 12:00", event: "Caso encerrado - Sem necessidade de ações" }
+    ],
+    result: "Mudança de aeronave comunicada no prazo. Assento equivalente garantido. Nenhuma ação adicional necessária.",
+    icon: Plane
+  },
+  {
+    id: "extravio-bagagem",
+    title: "Extravio de Bagagem",
+    company: "Rotas do Brasil",
+    caseNumber: "#2025-005",
+    type: "Extravio de bagagem",
+    airline: "LATAM Airlines",
+    flight: "LA 4567",
+    date: "03/01/2025",
+    route: "GIG → MAO",
+    client: "Fernanda Oliveira",
+    cpf: "789.123.456-00",
+    email: "fernanda.oliveira@email.com",
+    timeline: [
+      { time: "03/01 22:00", event: "Cliente relata bagagem não localizada" },
+      { time: "03/01 22:10", event: "Caso aberto - RIB registrado" },
+      { time: "03/01 22:30", event: "Assistência emergencial autorizada (R$ 500)" },
+      { time: "05/01 10:00", event: "Bagagem localizada em Brasília" },
+      { time: "06/01 14:00", event: "Bagagem entregue - Caso encerrado" }
+    ],
+    result: "Bagagem localizada e entregue em 72h. Assistência emergencial fornecida. Cliente satisfeito com a resolução.",
+    icon: Luggage
+  }
+];
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -148,112 +267,163 @@ const Index = () => {
                 <DialogTrigger asChild>
                   <Button 
                     variant="outline" 
-                    className="hover:scale-105 transition-all"
+                    className="hover:scale-105 transition-all shadow-md hover:shadow-xl hover:border-primary"
                   >
-                    Ver exemplo
+                    <FileText className="w-4 h-4 mr-2" />
+                    Ver exemplos de casos
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-4 duration-300">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold">Relatório do Caso - Exemplo</DialogTitle>
+                    <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                      <FileText className="w-6 h-6 text-primary" />
+                      Exemplos de Relatórios de Casos
+                    </DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-6 p-6 bg-muted/30 rounded-lg">
-                    {/* Cabeçalho */}
-                    <div className="border-b pb-4">
-                      <h3 className="text-xl font-bold text-primary">Viagens Horizonte Ltda</h3>
-                      <p className="text-sm text-muted-foreground">CNPJ: 12.345.678/0001-90</p>
-                      <p className="text-sm text-muted-foreground">Data: 15/01/2025</p>
-                    </div>
 
-                    {/* Informações do Caso */}
-                    <div className="space-y-3">
-                      <h4 className="font-bold text-lg">Dados do Caso</h4>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <span className="font-semibold">Número do Caso:</span> #2025-001
-                        </div>
-                        <div>
-                          <span className="font-semibold">Tipo:</span> Cancelamento de voo
-                        </div>
-                        <div>
-                          <span className="font-semibold">Cia Aérea:</span> Azul Linhas Aéreas
-                        </div>
-                        <div>
-                          <span className="font-semibold">Voo:</span> AD 4321
-                        </div>
-                        <div>
-                          <span className="font-semibold">Data do voo:</span> 10/01/2025
-                        </div>
-                        <div>
-                          <span className="font-semibold">Trecho:</span> GRU → SSA
-                        </div>
-                      </div>
-                    </div>
+                  <Tabs defaultValue="cancelamento" className="w-full animate-fade-in">
+                    <TabsList className="grid w-full grid-cols-5 mb-6">
+                      {caseExamples.map((example) => {
+                        const IconComponent = example.icon;
+                        return (
+                          <TabsTrigger key={example.id} value={example.id} className="text-xs">
+                            <IconComponent className="w-3 h-3 mr-1" />
+                            {example.title.split(' ')[0]}
+                          </TabsTrigger>
+                        );
+                      })}
+                    </TabsList>
 
-                    {/* Cliente */}
-                    <div className="space-y-2">
-                      <h4 className="font-bold text-lg">Cliente Afetado</h4>
-                      <p className="text-sm">Maria Silva Santos</p>
-                      <p className="text-sm text-muted-foreground">CPF: 123.456.789-00</p>
-                      <p className="text-sm text-muted-foreground">Contato: maria.silva@email.com</p>
-                    </div>
+                    {caseExamples.map((example, exampleIdx) => {
+                      const IconComponent = example.icon;
+                      return (
+                        <TabsContent 
+                          key={example.id} 
+                          value={example.id}
+                          className="animate-in fade-in-0 slide-in-from-right-4 duration-200"
+                        >
+                          <div className="space-y-6 p-6 bg-gradient-to-br from-muted/30 to-primary/5 rounded-lg border border-primary/20">
+                            {/* Header com badge animado */}
+                            <div className="border-b pb-4 animate-fade-in">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <h3 className="text-xl font-bold text-primary">{example.company}</h3>
+                                  <p className="text-sm text-muted-foreground">CNPJ: 12.345.678/0001-90</p>
+                                  <p className="text-sm text-muted-foreground">Data: 15/01/2025</p>
+                                </div>
+                                <Badge className="animate-scale-in bg-primary/20 text-primary border-primary">
+                                  {example.type}
+                                </Badge>
+                              </div>
+                            </div>
 
-                    {/* Timeline */}
-                    <div className="space-y-2">
-                      <h4 className="font-bold text-lg">Linha do Tempo</h4>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex gap-3">
-                          <Badge variant="outline">10/01 08:30</Badge>
-                          <p>Recebimento do e-mail de cancelamento da cia aérea</p>
-                        </div>
-                        <div className="flex gap-3">
-                          <Badge variant="outline">10/01 09:15</Badge>
-                          <p>Caso aberto na plataforma automaticamente</p>
-                        </div>
-                        <div className="flex gap-3">
-                          <Badge variant="outline">10/01 10:00</Badge>
-                          <p>Carta de reclamação enviada à cia aérea</p>
-                        </div>
-                        <div className="flex gap-3">
-                          <Badge variant="outline">12/01 14:20</Badge>
-                          <p>Reacomodação confirmada para voo AD 4325</p>
-                        </div>
-                        <div className="flex gap-3">
-                          <Badge variant="outline">15/01 11:00</Badge>
-                          <p>Caso encerrado - Cliente satisfeito</p>
-                        </div>
-                      </div>
-                    </div>
+                            {/* Dados do Caso */}
+                            <div className="space-y-3 animate-fade-in" style={{ animationDelay: '100ms' }}>
+                              <h4 className="font-bold text-lg flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-primary" />
+                                Dados do Caso
+                              </h4>
+                              <div className="grid grid-cols-2 gap-3 text-sm bg-background/50 p-4 rounded-lg">
+                                <div>
+                                  <span className="font-semibold">Número do Caso:</span> {example.caseNumber}
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Tipo:</span> {example.type}
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Cia Aérea:</span> {example.airline}
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Voo:</span> {example.flight}
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Data do voo:</span> {example.date}
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Trecho:</span> {example.route}
+                                </div>
+                              </div>
+                            </div>
 
-                    {/* Prazos ANAC */}
-                    <div className="space-y-2">
-                      <h4 className="font-bold text-lg">Cumprimento de Prazos ANAC</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                          <span>Assistência material oferecida dentro de 1h</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                          <span>Reacomodação em até 24h conforme Resolução 400</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                          <span>Comunicação ao passageiro imediata</span>
-                        </div>
-                      </div>
-                    </div>
+                            {/* Cliente */}
+                            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '200ms' }}>
+                              <h4 className="font-bold text-lg flex items-center gap-2">
+                                <Mail className="w-5 h-5 text-primary" />
+                                Cliente Afetado
+                              </h4>
+                              <div className="bg-background/50 p-4 rounded-lg text-sm">
+                                <p className="font-semibold">{example.client}</p>
+                                <p className="text-muted-foreground">CPF: {example.cpf}</p>
+                                <p className="text-muted-foreground">Contato: {example.email}</p>
+                              </div>
+                            </div>
 
-                    {/* Resultado */}
-                    <div className="bg-primary/10 p-4 rounded-lg">
-                      <h4 className="font-bold text-lg mb-2">Resultado Final</h4>
-                      <p className="text-sm">
-                        Caso resolvido com sucesso. Cliente reacomodado em voo alternativo sem custos 
-                        adicionais. Todos os prazos da ANAC foram cumpridos. Documentação completa 
-                        arquivada para eventuais auditorias.
-                      </p>
-                    </div>
-                  </div>
+                            {/* Timeline animada */}
+                            <div className="space-y-3 animate-fade-in" style={{ animationDelay: '300ms' }}>
+                              <h4 className="font-bold text-lg flex items-center gap-2">
+                                <Clock className="w-5 h-5 text-primary" />
+                                Linha do Tempo
+                              </h4>
+                              <div className="space-y-3 text-sm">
+                                {example.timeline.map((item, idx) => (
+                                  <div 
+                                    key={idx} 
+                                    className="flex gap-3 items-start animate-slide-in-right"
+                                    style={{ animationDelay: `${400 + (idx * 50)}ms` }}
+                                  >
+                                    <Badge variant="outline" className="shrink-0">{item.time}</Badge>
+                                    <p className="flex-1">{item.event}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Prazos ANAC */}
+                            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '700ms' }}>
+                              <h4 className="font-bold text-lg flex items-center gap-2">
+                                <ListChecks className="w-5 h-5 text-primary" />
+                                Cumprimento de Prazos ANAC
+                              </h4>
+                              <div className="space-y-2 text-sm bg-background/50 p-4 rounded-lg">
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="w-4 h-4 text-green-600" />
+                                  <span>Assistência material oferecida dentro de 1h</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="w-4 h-4 text-green-600" />
+                                  <span>Reacomodação em até 24h conforme Resolução 400</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="w-4 h-4 text-green-600" />
+                                  <span>Comunicação ao passageiro imediata</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Resultado Final com gradiente */}
+                            <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-accent/10 p-6 rounded-lg border-l-4 border-l-primary animate-fade-in" style={{ animationDelay: '800ms' }}>
+                              <h4 className="font-bold text-lg mb-2 flex items-center gap-2">
+                                <CheckCircle className="w-5 h-5 text-green-600" />
+                                Resultado Final
+                              </h4>
+                              <p className="text-sm">{example.result}</p>
+                            </div>
+
+                            {/* Botão de Download */}
+                            <div className="flex justify-center pt-4 animate-fade-in" style={{ animationDelay: '900ms' }}>
+                              <Button 
+                                variant="outline" 
+                                className="gap-2 hover:scale-105 transition-all hover:bg-primary hover:text-primary-foreground"
+                              >
+                                <Download className="w-4 h-4" />
+                                Baixar PDF deste exemplo
+                              </Button>
+                            </div>
+                          </div>
+                        </TabsContent>
+                      );
+                    })}
+                  </Tabs>
                 </DialogContent>
               </Dialog>
             </div>
