@@ -240,7 +240,7 @@ const Index = () => {
                   O que é
                 </AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pt-2">
-                  A Konzup Hub organiza o pós-venda de incidentes aéreos (atraso, cancelamento, 
+                  A Ordem em Dia organiza o pós-venda de incidentes aéreos (atraso, cancelamento, 
                   overbooking, mudança de voo) com prazos da ANAC, cartas automáticas e relatório final.
                 </AccordionContent>
               </AccordionItem>
