@@ -85,7 +85,7 @@ const Hoje = () => {
                       <TableCell className="font-medium">{caso.passageiro}</TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <div className="font-medium">{caso.voo}</div>
+                          <div className="font-medium">{caso.fornecedor}</div>
                           <div className="text-muted-foreground">{caso.localizador}</div>
                         </div>
                       </TableCell>
@@ -133,7 +133,7 @@ const Hoje = () => {
                       <div>
                         <CardTitle className="text-base">{caso.passageiro}</CardTitle>
                         <CardDescription>
-                          {caso.voo} • {caso.localizador}
+                          {caso.fornecedor} • {caso.localizador}
                         </CardDescription>
                       </div>
                       <Avatar className="h-8 w-8">
