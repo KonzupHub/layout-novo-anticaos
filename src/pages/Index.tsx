@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Clock, CheckCircle, FileText, Mail, ListChecks, FileCheck, Globe, TrendingUp, Link as LinkIcon, Chrome } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -143,13 +144,118 @@ const Index = () => {
             </div>
 
             <div className="text-center pt-6">
-              <Button 
-                variant="outline" 
-                onClick={() => scrollToSection('exemplo-relatorio')}
-                className="hover:scale-105 transition-all"
-              >
-                Ver exemplo
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="hover:scale-105 transition-all"
+                  >
+                    Ver exemplo
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold">Relatório do Caso - Exemplo</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-6 p-6 bg-muted/30 rounded-lg">
+                    {/* Cabeçalho */}
+                    <div className="border-b pb-4">
+                      <h3 className="text-xl font-bold text-primary">Viagens Horizonte Ltda</h3>
+                      <p className="text-sm text-muted-foreground">CNPJ: 12.345.678/0001-90</p>
+                      <p className="text-sm text-muted-foreground">Data: 15/01/2025</p>
+                    </div>
+
+                    {/* Informações do Caso */}
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-lg">Dados do Caso</h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="font-semibold">Número do Caso:</span> #2025-001
+                        </div>
+                        <div>
+                          <span className="font-semibold">Tipo:</span> Cancelamento de voo
+                        </div>
+                        <div>
+                          <span className="font-semibold">Cia Aérea:</span> Azul Linhas Aéreas
+                        </div>
+                        <div>
+                          <span className="font-semibold">Voo:</span> AD 4321
+                        </div>
+                        <div>
+                          <span className="font-semibold">Data do voo:</span> 10/01/2025
+                        </div>
+                        <div>
+                          <span className="font-semibold">Trecho:</span> GRU → SSA
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Cliente */}
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">Cliente Afetado</h4>
+                      <p className="text-sm">Maria Silva Santos</p>
+                      <p className="text-sm text-muted-foreground">CPF: 123.456.789-00</p>
+                      <p className="text-sm text-muted-foreground">Contato: maria.silva@email.com</p>
+                    </div>
+
+                    {/* Timeline */}
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">Linha do Tempo</h4>
+                      <div className="space-y-3 text-sm">
+                        <div className="flex gap-3">
+                          <Badge variant="outline">10/01 08:30</Badge>
+                          <p>Recebimento do e-mail de cancelamento da cia aérea</p>
+                        </div>
+                        <div className="flex gap-3">
+                          <Badge variant="outline">10/01 09:15</Badge>
+                          <p>Caso aberto na plataforma automaticamente</p>
+                        </div>
+                        <div className="flex gap-3">
+                          <Badge variant="outline">10/01 10:00</Badge>
+                          <p>Carta de reclamação enviada à cia aérea</p>
+                        </div>
+                        <div className="flex gap-3">
+                          <Badge variant="outline">12/01 14:20</Badge>
+                          <p>Reacomodação confirmada para voo AD 4325</p>
+                        </div>
+                        <div className="flex gap-3">
+                          <Badge variant="outline">15/01 11:00</Badge>
+                          <p>Caso encerrado - Cliente satisfeito</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Prazos ANAC */}
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">Cumprimento de Prazos ANAC</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <span>Assistência material oferecida dentro de 1h</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <span>Reacomodação em até 24h conforme Resolução 400</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <span>Comunicação ao passageiro imediata</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Resultado */}
+                    <div className="bg-primary/10 p-4 rounded-lg">
+                      <h4 className="font-bold text-lg mb-2">Resultado Final</h4>
+                      <p className="text-sm">
+                        Caso resolvido com sucesso. Cliente reacomodado em voo alternativo sem custos 
+                        adicionais. Todos os prazos da ANAC foram cumpridos. Documentação completa 
+                        arquivada para eventuais auditorias.
+                      </p>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </section>
