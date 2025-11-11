@@ -50,7 +50,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="relative max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
           <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary to-[#0f1729] bg-clip-text text-transparent">
-            Anti-caos operacional para turismo
+            Ordem em Dia operacional para turismo
           </h2>
           <p className="text-2xl font-semibold text-primary">
             Incidente resolvido, venda preservada
