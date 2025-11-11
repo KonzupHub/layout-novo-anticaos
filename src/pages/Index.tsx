@@ -57,7 +57,7 @@ const Index = () => {
           </p>
           <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
             A margem do aéreo é apertada. Cada minuto gasto no retrabalho vira perda real. 
-            A Konzup Hub corta o retrabalho e protege a venda.
+            A Ordem em Dia corta o retrabalho e protege a venda.
           </p>
           <div className="flex gap-4 justify-center pt-6">
             <Link to="/cadastro">
