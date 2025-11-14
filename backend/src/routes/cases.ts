@@ -235,8 +235,11 @@ router.post('/:id/pdf', async (req: AuthenticatedRequest, res: Response) => {
       return;
     }
 
-    // Gera o PDF
-    const pdfDoc = await generateCaseReport(caso);
+    // Busca dados da agência para incluir no PDF
+    const agencia = await repo.getAgency(cnpj);
+
+    // Gera o PDF com os dados da agência
+    const pdfDoc = await generateCaseReport(caso, agencia);
     const pdfBytes = await pdfDoc.save();
 
     // Faz upload no Cloud Storage

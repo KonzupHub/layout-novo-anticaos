@@ -16,12 +16,22 @@ export function initializeFirebaseAdmin(): void {
   }
 
   if (!admin.apps.length) {
-    // No Cloud Run, usa Application Default Credentials
-    // Em ambiente local, usa GOOGLE_APPLICATION_CREDENTIALS
+    // Application Default Credentials funciona automaticamente:
+    // - No Cloud Run: usa a service account do serviço automaticamente
+    // - Em ambiente local: usa GOOGLE_APPLICATION_CREDENTIALS se existir,
+    //   caso contrário tenta as credenciais padrão do ambiente (gcloud auth)
+    const projectId = process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT;
+    
+    if (!projectId) {
+      throw new Error('FIREBASE_PROJECT_ID ou GCLOUD_PROJECT deve estar definido');
+    }
+    
     admin.initializeApp({
       credential: admin.credential.applicationDefault(),
-      projectId: process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT,
+      projectId,
     });
+    
+    console.log(`✅ Firebase Admin inicializado para projeto: ${projectId}`);
   }
 
   initialized = true;

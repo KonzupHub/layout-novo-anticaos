@@ -8,6 +8,7 @@ import earlyAccessRouter from './routes/early-access.js';
 import authRouter from './routes/auth.js';
 import casesRouter from './routes/cases.js';
 import uploadRouter from './routes/upload.js';
+import iaRouter from './routes/ia.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,9 +20,21 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
+// Função para processar múltiplas origens
+const getCorsOrigins = (): string | string[] => {
+  if (!CORS_ORIGIN) return 'http://localhost:5173';
+  
+  // Se contém vírgula, retorna array de origens
+  if (CORS_ORIGIN.includes(',')) {
+    return CORS_ORIGIN.split(',').map(origin => origin.trim());
+  }
+  
+  return CORS_ORIGIN;
+};
+
 // Middlewares
 app.use(cors({
-  origin: CORS_ORIGIN,
+  origin: getCorsOrigins(),
   credentials: true,
 }));
 
@@ -40,6 +53,7 @@ app.use('/api/early-access', earlyAccessRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/cases', casesRouter);
 app.use('/api/upload-csv', uploadRouter);
+app.use('/api/ia', iaRouter);
 
 // Rota para servir arquivos em modo stub
 if (process.env.LOCAL_STUB === 'true') {
@@ -87,7 +101,7 @@ app.use((req: Request, res: Response) => {
 // Inicia servidor
 app.listen(PORT, () => {
   const isStubMode = process.env.LOCAL_STUB === 'true';
-  console.log(`\n🚀 Servidor rodando na porta ${PORT}`);
+  console.log(`\n🚀 Servidor rodando em http://localhost:${PORT}`);
   console.log(`🌐 CORS origin: ${CORS_ORIGIN}`);
   console.log(`📦 Ambiente: ${process.env.NODE_ENV || 'development'}`);
   

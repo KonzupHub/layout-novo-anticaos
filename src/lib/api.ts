@@ -1,6 +1,8 @@
 import type { Case, CreateCaseDto, UpdateCaseDto } from '@/types/shared';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080/api';
+// Em desenvolvimento: usa VITE_API_BASE do .env (http://localhost:8080/api)
+// Em produção: se VITE_API_BASE não estiver definida, usa a URL do Cloud Run
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://konzup-hub-backend-rsdkbytqeq-uc.a.run.app/api';
 
 interface ApiResponse<T> {
   ok: boolean;
@@ -30,6 +32,16 @@ async function request<T>(
       headers,
     });
 
+    // Verifica se a resposta é JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      return {
+        ok: false,
+        error: 'Erro de conexão com o servidor',
+        details: 'O servidor não está respondendo corretamente. Verifique se o backend está rodando em http://localhost:8080',
+      };
+    }
+
     const data = await response.json() as ApiResponse<T>;
 
     if (!response.ok) {
@@ -41,12 +53,22 @@ async function request<T>(
     }
 
     return data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erro na requisição:', error);
+    let errorMessage = 'Erro de conexão com o servidor';
+    let errorDetails = '';
+    
+    if (error instanceof Error) {
+      errorDetails = error.message;
+      if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+        errorMessage = 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.';
+      }
+    }
+    
     return {
       ok: false,
-      error: 'Erro de conexão com o servidor',
-      details: error.message,
+      error: errorMessage,
+      details: errorDetails,
     };
   }
 }
@@ -132,7 +154,7 @@ export const api = {
     pendencias: Array<{
       localizador: string;
       motivo: string;
-      dadosCSV?: any;
+      dadosCSV?: Record<string, unknown>;
       dadosSistema?: Case;
     }>;
     totais: {
@@ -160,7 +182,20 @@ export const api = {
         body: formData,
       });
 
-      const data = await response.json() as ApiResponse<any>;
+      const data = await response.json() as ApiResponse<{
+        pendencias: Array<{
+          localizador: string;
+          motivo: string;
+          dadosCSV?: Record<string, unknown>;
+          dadosSistema?: Case;
+        }>;
+        totais: {
+          linhasProcessadas: number;
+          divergenciasEncontradas: number;
+          casosNaoEncontrados: number;
+          casosComDivergencia: number;
+        };
+      }>;
 
       if (!response.ok) {
         return {
@@ -171,12 +206,12 @@ export const api = {
       }
 
       return data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro no upload:', error);
       return {
         ok: false,
         error: 'Erro ao fazer upload do arquivo',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Erro desconhecido',
       };
     }
   },

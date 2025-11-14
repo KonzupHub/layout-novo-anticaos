@@ -12,7 +12,9 @@
 
 ### Frontend
 
-1. ✅ **Cliente API ajustado**: `VITE_API_BASE` default mudado para `http://localhost:8080/api`
+1. ✅ **Cliente API ajustado**: 
+   - **Desenvolvimento local**: Usa `VITE_API_BASE` do arquivo `.env` (padrão: `http://localhost:8080/api`)
+   - **Produção**: Se `VITE_API_BASE` não estiver definida, usa automaticamente `https://konzup-hub-backend-rsdkbytqeq-uc.a.run.app/api`
 2. ✅ **Upload CSV corrigido**: Agora usa `/api/upload-csv` (sem `/csv`)
 3. ✅ **Badge "Ambiente de demonstração"**: Adicionado no Login e Dashboard Header
 
@@ -144,4 +146,31 @@ curl -X POST http://localhost:8080/api/waitlist \
 4. **Rotas**: 
    - Upload CSV: `POST /api/upload-csv` (não `/api/upload-csv/csv`)
    - Health: `GET /api/health` retorna `{ok: true}`
+
+## 🌐 Configuração da URL da API
+
+### Desenvolvimento Local
+
+O frontend usa a variável `VITE_API_BASE` do arquivo `.env` na raiz do projeto:
+
+```env
+VITE_API_BASE=http://localhost:8080/api
+```
+
+Quando você roda `npm run dev` ou `npm run dev:all`, o Vite carrega o `.env` e o frontend se conecta ao backend local.
+
+### Produção (Build)
+
+Quando você faz `npm run build` para produção:
+
+- **Se `VITE_API_BASE` estiver definida** no ambiente de deploy (ex: variável de ambiente do Firebase Hosting), ela será usada.
+- **Se `VITE_API_BASE` não estiver definida**, o frontend usa automaticamente a URL do Cloud Run:
+  ```
+  https://konzup-hub-backend-rsdkbytqeq-uc.a.run.app/api
+  ```
+
+Isso significa que:
+- ✅ Em desenvolvimento local, você sempre usa o backend local (`http://localhost:8080/api`)
+- ✅ Em produção, o frontend se conecta automaticamente ao Cloud Run sem precisar configurar nada
+- ✅ Se precisar usar uma URL diferente em produção, basta definir `VITE_API_BASE` no ambiente de deploy
 

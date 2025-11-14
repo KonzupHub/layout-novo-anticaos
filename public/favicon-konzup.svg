@@ -1,0 +1,43 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="64" height="64" rx="12" fill="#0F172A"/>
+  
+  <!-- Dark blue shield/oval outline - left side -->
+  <path d="M16 20C16 20 14 24 14 32C14 40 16 44 20 46C18 48 16 50 16 50" 
+        stroke="#1E40AF" 
+        stroke-width="3.5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        fill="none"/>
+  
+  <!-- Dark blue shield/oval outline - right side -->
+  <path d="M48 20C48 20 50 24 50 32C50 40 48 44 44 46C46 48 48 50 48 50" 
+        stroke="#1E40AF" 
+        stroke-width="3.5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        fill="none"/>
+  
+  <!-- Dark blue top segment -->
+  <path d="M28 14C28 14 30 12 34 12C36 12 38 14 38 14" 
+        stroke="#1E40AF" 
+        stroke-width="3" 
+        stroke-linecap="round" 
+        fill="none"/>
+  
+  <!-- Vibrant purple line - flowing C/U shape -->
+  <path d="M20 18C20 18 22 16 28 16C34 16 38 18 38 22C38 26 36 28 34 30C36 32 38 34 38 38C38 42 34 46 28 46C22 46 20 44 20 44" 
+        stroke="#A855F7" 
+        stroke-width="4" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        fill="none"/>
+  
+  <!-- Bright teal line - shorter curved -->
+  <path d="M42 18C42 18 44 20 44 26C44 34 42 36 40 38" 
+        stroke="#14B8A6" 
+        stroke-width="4" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        fill="none"/>
+</svg>

@@ -10,9 +10,6 @@ import { Link } from "react-router-dom";
 const Hoje = () => {
   return (
     <div className="space-y-6">
-      {/* Badge de Demonstração */}
-      <Badge variant="secondary" className="mb-2">🎭 Ambiente de demonstração</Badge>
-
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Dia de hoje</h2>
         <p className="text-muted-foreground">Acompanhe os casos que precisam de atenção</p>

@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Clock, CheckCircle, FileText, Mail, ListChecks, FileCheck, Globe, TrendingUp, Link as LinkIcon, Chrome, Plane, Users, Luggage } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 
 const caseExamples = [
   {
@@ -133,14 +134,38 @@ const Index = () => {
   const [email, setEmail] = useState("");
   const { toast } = useToast();
 
-  const handleNotifyMe = (e: React.FormEvent) => {
+  const handleNotifyMe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (!email) {
       toast({
-        title: "Você será avisado das novidades!",
-        description: "Obrigado pelo interesse.",
+        title: "Email é obrigatório",
+        variant: "destructive",
       });
-      setEmail("");
+      return;
+    }
+
+    try {
+      const response = await api.postWaitlist(email);
+      if (response.ok) {
+        toast({
+          title: "Você será avisado das novidades!",
+          description: "Obrigado pelo interesse.",
+        });
+        setEmail("");
+      } else {
+        toast({
+          title: "Erro ao cadastrar email",
+          description: response.error || "Tente novamente.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Tente novamente.";
+      toast({
+        title: "Erro ao cadastrar email",
+        description: errorMessage,
+        variant: "destructive",
+      });
     }
   };
 

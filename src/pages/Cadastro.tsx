@@ -3,39 +3,76 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 
 const Cadastro = () => {
-  const [cnpj, setCnpj] = useState("");
-  const [agencia, setAgencia] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [usuarios, setUsuarios] = useState("");
+  const [nomeEmpresa, setNomeEmpresa] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { signup } = useAuth();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Aceita qualquer valor ou campos vazios
-    localStorage.setItem("konzup_user", JSON.stringify({ 
-      email: email || "demo@konzup.com", 
-      agencia: agencia || "Agência Demo" 
-    }));
-    toast({
-      title: "Conta de demonstração criada! Explore o Konzup Hub.",
-    });
-    navigate("/dashboard");
+    if (!email || !password || !nomeEmpresa || !confirmPassword) {
+      toast({
+        title: "Campos obrigatórios",
+        description: "Preencha todos os campos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast({
+        title: "Senhas não coincidem",
+        description: "As senhas devem ser iguais",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Senha muito curta",
+        description: "A senha deve ter no mínimo 6 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Gera valores padrão para campos não fornecidos
+      const cnpjPadrao = `00000000000000`;
+      const cidadePadrao = `São Paulo`;
+      const nomePadrao = email.split('@')[0]; // Usa parte do email como nome
+      
+      await signup({
+        email,
+        senha: password,
+        cnpj: cnpjPadrao,
+        nomeAgencia: nomeEmpresa,
+        cidade: cidadePadrao,
+        nome: nomePadrao,
+      });
+      navigate("/dashboard");
+    } catch (error) {
+      // Erro já é tratado no useAuth
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-4">
-          <Badge variant="secondary" className="mb-2">🎭 Ambiente de demonstração</Badge>
           <h1 className="text-3xl font-bold text-primary">Konzup Hub</h1>
           <p className="mt-2 text-muted-foreground">Crie sua conta</p>
         </div>
@@ -43,51 +80,15 @@ const Cadastro = () => {
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
-              <Label htmlFor="cnpj">CNPJ</Label>
+              <Label htmlFor="nomeEmpresa">Nome da empresa</Label>
               <Input
-                id="cnpj"
+                id="nomeEmpresa"
                 type="text"
-                value={cnpj}
-                onChange={(e) => setCnpj(e.target.value)}
-                placeholder="00.000.000/0000-00"
+                value={nomeEmpresa}
+                onChange={(e) => setNomeEmpresa(e.target.value)}
+                placeholder="Sua empresa"
+                required
               />
-            </div>
-
-            <div>
-              <Label htmlFor="agencia">Nome da Agência</Label>
-              <Input
-                id="agencia"
-                type="text"
-                value={agencia}
-                onChange={(e) => setAgencia(e.target.value)}
-                placeholder="Sua Agência"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="cidade">Cidade</Label>
-              <Input
-                id="cidade"
-                type="text"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
-                placeholder="São Paulo"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="usuarios">Número de usuários</Label>
-              <Select value={usuarios} onValueChange={setUsuarios}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1-5">1-5 usuários</SelectItem>
-                  <SelectItem value="6-10">6-10 usuários</SelectItem>
-                  <SelectItem value="11-20">11-20 usuários</SelectItem>
-                  <SelectItem value="20+">Mais de 20 usuários</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <div>
@@ -98,6 +99,7 @@ const Cadastro = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
+                required
               />
             </div>
 
@@ -108,13 +110,31 @@ const Cadastro = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="Mínimo 6 caracteres (ex: MinhaSenh@123)"
+                required
+                minLength={6}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Use pelo menos 6 caracteres. Evite senhas simples como "1234" ou "senha".
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="confirmPassword">Confirme sua senha</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
+                required
+                minLength={6}
               />
             </div>
           </div>
 
-          <Button type="submit" className="w-full">
-            Criar conta
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Criando conta..." : "Criar conta"}
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">

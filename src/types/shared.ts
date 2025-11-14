@@ -63,3 +63,12 @@ export interface UpdateCaseDto {
   notas?: string;
   prazo?: string;
 }
+
+export interface SignupDto {
+  email: string;
+  senha: string;
+  cnpj: string;
+  nomeAgencia: string;
+  cidade: string;
+  nome: string;
+}

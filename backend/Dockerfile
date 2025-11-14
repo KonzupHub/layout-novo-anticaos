@@ -6,8 +6,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Instalar dependências
-RUN npm ci --only=production
+# Instalar todas as dependências (incluindo devDependencies para build)
+RUN npm ci
 
 # Copiar código fonte
 COPY src ./src
@@ -15,7 +15,10 @@ COPY src ./src
 # Build TypeScript
 RUN npm run build
 
-# Expor porta
+# Remover devDependencies após build para reduzir tamanho da imagem
+RUN npm prune --production
+
+# Expor porta (Cloud Run usa PORT do ambiente, mas EXPOSE ajuda na documentação)
 EXPOSE 8080
 
 # Comando de inicialização

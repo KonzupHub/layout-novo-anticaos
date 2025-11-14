@@ -118,7 +118,7 @@ const CasoDetail = () => {
         // Abre o PDF em nova aba
         window.open(response.data.url, "_blank");
         toast({
-          title: "PDF gerado com sucesso",
+          title: "Documento pronto",
         });
       } else {
         toast({
@@ -128,9 +128,13 @@ const CasoDetail = () => {
         });
       }
     } catch (error: any) {
+      const isStubMode = import.meta.env.VITE_API_BASE?.includes('localhost') || import.meta.env.DEV;
+      if (isStubMode) {
+        console.error('Erro ao gerar PDF:', error);
+      }
       toast({
         title: "Erro ao gerar PDF",
-        description: error.message,
+        description: "Não foi possível gerar o documento. Tente novamente.",
         variant: "destructive",
       });
     } finally {
