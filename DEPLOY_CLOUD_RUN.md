@@ -26,12 +26,19 @@ Configure estas variáveis no serviço Cloud Run:
 | `FIREBASE_PROJECT_ID` | `ordem-em-dia` | ID do projeto Firebase |
 | `GCLOUD_PROJECT` | `ordem-em-dia` | ID do projeto Google Cloud |
 | `GCS_BUCKET` | `ordem-em-dia.firebasestorage.app` | Nome do bucket do Firebase Storage |
-| `CORS_ORIGIN` | `https://ordem.konzuphub.com,http://localhost:5173` | Origens permitidas (separadas por vírgula). Múltiplas origens são suportadas. |
+| `CORS_ORIGIN` | (opcional) `https://ordem.konzuphub.com,https://anti-caos-konzup.pages.dev,http://localhost:5173` | Origens permitidas (separadas por vírgula). Se não definida, o código usa fallback padrão com domínios de produção. |
 | `NODE_ENV` | `production` | Ambiente de produção |
 | `LOCAL_STUB` | `false` | Desabilita modo stub em produção |
 | `PORT` | `8080` | Porta do servidor (Cloud Run define automaticamente, mas incluímos para compatibilidade) |
 
-**Nota sobre CORS_ORIGIN**: O backend aceita múltiplas origens separadas por vírgula. Exemplo: `https://ordem.konzuphub.com,http://localhost:5173`. Isso permite que tanto o frontend em produção quanto o desenvolvimento local funcionem.
+**Nota sobre CORS_ORIGIN**: 
+- Se não definida, o backend usa automaticamente um fallback padrão que inclui:
+  - `http://localhost:5173` (desenvolvimento)
+  - `https://ordem.konzuphub.com` (produção)
+  - `https://anti-caos-konzup.pages.dev` (Cloudflare Pages)
+  - Qualquer domínio terminando com `.pages.dev` (preview da Cloudflare)
+- Se definida, aceita múltiplas origens separadas por vírgula
+- Recomendado: deixar vazia para usar o fallback padrão, ou definir explicitamente se precisar de controle total
 
 ## Comandos para Deploy
 
@@ -100,7 +107,7 @@ gcloud run deploy konzup-hub-backend \
   --cpu 1 \
   --timeout 300 \
   --max-instances 10 \
-  --set-env-vars="FIREBASE_PROJECT_ID=ordem-em-dia,GCLOUD_PROJECT=ordem-em-dia,GCS_BUCKET=ordem-em-dia.firebasestorage.app,CORS_ORIGIN=https://ordem.konzuphub.com,http://localhost:5173,NODE_ENV=production,LOCAL_STUB=false"
+  --set-env-vars="FIREBASE_PROJECT_ID=ordem-em-dia,GCLOUD_PROJECT=ordem-em-dia,GCS_BUCKET=ordem-em-dia.firebasestorage.app,NODE_ENV=production,LOCAL_STUB=false"
 ```
 
 **Explicação dos parâmetros:**

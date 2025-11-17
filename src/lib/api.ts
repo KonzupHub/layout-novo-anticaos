@@ -75,6 +75,9 @@ async function request<T>(
 
 export const api = {
   // Waitlist
+  // Rota: POST /api/waitlist
+  // Backend: backend/src/routes/waitlist.ts -> router.post('/', ...)
+  // Endpoint completo: https://konzup-hub-backend-rsdkbytqeq-uc.a.run.app/api/waitlist
   async postWaitlist(email: string): Promise<ApiResponse<{ message: string }>> {
     return request('/waitlist', {
       method: 'POST',
@@ -97,7 +100,10 @@ export const api = {
     });
   },
 
-  // Auth
+  // Auth - Signup (criação de conta)
+  // Rota: POST /api/auth/signup
+  // Backend: backend/src/routes/auth.ts -> router.post('/signup', ...)
+  // Endpoint completo: https://konzup-hub-backend-rsdkbytqeq-uc.a.run.app/api/auth/signup
   async signup(data: {
     email: string;
     senha: string;

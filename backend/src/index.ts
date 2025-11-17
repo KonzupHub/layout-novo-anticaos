@@ -22,7 +22,14 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
 // Função para processar múltiplas origens
 const getCorsOrigins = (): string | string[] => {
-  if (!CORS_ORIGIN) return 'http://localhost:5173';
+  if (!CORS_ORIGIN) {
+    // Fallback padrão: permite localhost e domínios de produção conhecidos
+    return [
+      'http://localhost:5173',
+      'https://ordem.konzuphub.com',
+      'https://anti-caos-konzup.pages.dev',
+    ];
+  }
   
   // Se contém vírgula, retorna array de origens
   if (CORS_ORIGIN.includes(',')) {
@@ -32,11 +39,39 @@ const getCorsOrigins = (): string | string[] => {
   return CORS_ORIGIN;
 };
 
-// Middlewares
-app.use(cors({
-  origin: getCorsOrigins(),
+// Função para verificar se a origem é permitida
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    const allowedOrigins = getCorsOrigins();
+    
+    // Permite requisições sem origin (ex: Postman, curl)
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+    
+    // Se allowedOrigins é array, verifica se origin está na lista
+    if (Array.isArray(allowedOrigins)) {
+      // Permite domínios de preview da Cloudflare Pages (terminam com .pages.dev)
+      const isCloudflarePreview = origin.endsWith('.pages.dev');
+      const isAllowed = allowedOrigins.includes(origin) || isCloudflarePreview;
+      callback(null, isAllowed);
+      return;
+    }
+    
+    // Se allowedOrigins é string única, compara diretamente
+    if (typeof allowedOrigins === 'string') {
+      callback(null, origin === allowedOrigins);
+      return;
+    }
+    
+    callback(null, false);
+  },
   credentials: true,
-}));
+};
+
+// Middlewares
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -1,73 +1,141 @@
-# Welcome to your Lovable project
+# Ordem em Dia - Konzup Hub
 
-## Project info
+Sistema de gestão de pós-venda para incidentes aéreos em agências de turismo.
 
-**URL**: https://lovable.dev/projects/0e38493b-a812-4b8b-9f1c-0d8fdd324de7
+## 🚀 Tecnologias
 
-## How can I edit this code?
+Este projeto é construído com:
 
-There are several ways of editing your application.
+- **Frontend**: Vite + React + TypeScript + shadcn-ui + Tailwind CSS
+- **Backend**: Node.js + Express + TypeScript
+- **Banco de Dados**: Google Cloud Firestore
+- **Storage**: Google Cloud Storage
+- **IA**: Google Vertex AI (Gemini)
+- **Autenticação**: Firebase Auth
+- **Deploy Frontend**: Cloudflare Pages
+- **Deploy Backend**: Google Cloud Run
 
-**Use Lovable**
+## 📋 Pré-requisitos
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/0e38493b-a812-4b8b-9f1c-0d8fdd324de7) and start prompting.
+- Node.js 20+ (recomendado usar nvm)
+- npm 10+
+- Conta Google Cloud (para backend)
+- Conta Cloudflare (para frontend)
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠️ Instalação e Desenvolvimento
 
-**Use your preferred IDE**
+### Frontend
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```bash
+# Instalar dependências
+npm install
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Iniciar servidor de desenvolvimento
 npm run dev
+
+# Build para produção
+npm run build
+
+# Preview do build
+npm run preview
 ```
 
-**Edit a file directly in GitHub**
+### Backend
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Entrar na pasta do backend
+cd backend
 
-**Use GitHub Codespaces**
+# Instalar dependências
+npm install
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Iniciar em modo desenvolvimento (com stub)
+npm run dev:stub
 
-## What technologies are used for this project?
+# Build
+npm run build
 
-This project is built with:
+# Iniciar em produção
+npm start
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Desenvolvimento Full-Stack
 
-## How can I deploy this project?
+```bash
+# Na raiz do projeto, rodar frontend e backend juntos
+npm run dev:all
+```
 
-Simply open [Lovable](https://lovable.dev/projects/0e38493b-a812-4b8b-9f1c-0d8fdd324de7) and click on Share -> Publish.
+## 🌐 URLs de Produção
 
-## Can I connect a custom domain to my Lovable project?
+- **Frontend**: https://ordem.konzuphub.com
+- **Backend API**: https://konzup-hub-backend-rsdkbytqeq-uc.a.run.app/api
 
-Yes, you can!
+## 📚 Documentação
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- [Deploy do Backend no Cloud Run](./DEPLOY_CLOUD_RUN.md)
+- [Deploy do Frontend na Cloudflare](./DEPLOY_CLOUDFLARE_FRONTEND.md)
+- [Configuração de CORS](./backend/BACKEND_CORS.md)
+- [Configuração de Build para Cloudflare](./CLOUDFLARE_BUILD.md)
+- [Histórico de Integração de IA](./HISTORICO_IA.md)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🔧 Variáveis de Ambiente
+
+### Frontend
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+# Para desenvolvimento local, descomente:
+# VITE_API_BASE=http://localhost:8080/api
+
+# Em produção, VITE_API_BASE não precisa ser definida
+# O código usa automaticamente a URL do Cloud Run
+
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+```
+
+### Backend
+
+Veja [DEPLOY_CLOUD_RUN.md](./DEPLOY_CLOUD_RUN.md) para variáveis de ambiente do backend.
+
+## 📝 Estrutura do Projeto
+
+```
+.
+├── src/              # Código do frontend React
+├── backend/          # Código do backend Node.js
+├── public/           # Arquivos estáticos (favicon, etc)
+└── docs/             # Documentação adicional
+```
+
+## 🧪 Testes
+
+```bash
+# Testes do backend
+cd backend
+npm test
+```
+
+## 📦 Deploy
+
+### Frontend (Cloudflare Pages)
+
+Siga as instruções em [DEPLOY_CLOUDFLARE_FRONTEND.md](./DEPLOY_CLOUDFLARE_FRONTEND.md)
+
+### Backend (Google Cloud Run)
+
+Siga as instruções em [DEPLOY_CLOUD_RUN.md](./DEPLOY_CLOUD_RUN.md)
+
+## 🤝 Contribuindo
+
+Este é um projeto privado. Para contribuições, entre em contato com a equipe Konzup.
+
+## 📄 Licença
+
+Proprietário - Konzup Hub
