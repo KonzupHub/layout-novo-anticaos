@@ -27,22 +27,33 @@ async function request<T>(
   }
 
   try {
+    console.log('[API] Fazendo requisição:', { url, method: options.method || 'GET', headers });
     const response = await fetch(url, {
       ...options,
       headers,
     });
 
+    console.log('[API] Resposta recebida:', { 
+      status: response.status, 
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries()),
+      ok: response.ok 
+    });
+
     // Verifica se a resposta é JSON
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('[API] Resposta não é JSON:', { contentType, text: text.substring(0, 200) });
       return {
         ok: false,
         error: 'Erro de conexão com o servidor',
-        details: 'O servidor não está respondendo corretamente. Verifique se o backend está rodando em http://localhost:8080',
+        details: `O servidor retornou ${contentType || 'sem content-type'}. Verifique se o backend está rodando corretamente.`,
       };
     }
 
     const data = await response.json() as ApiResponse<T>;
+    console.log('[API] Dados parseados:', data);
 
     if (!response.ok) {
       return {
@@ -54,14 +65,21 @@ async function request<T>(
 
     return data;
   } catch (error: unknown) {
-    console.error('Erro na requisição:', error);
+    console.error('[API] Erro na requisição:', error);
     let errorMessage = 'Erro de conexão com o servidor';
     let errorDetails = '';
     
     if (error instanceof Error) {
       errorDetails = error.message;
+      console.error('[API] Detalhes do erro:', { 
+        message: error.message, 
+        name: error.name, 
+        stack: error.stack?.substring(0, 500) 
+      });
       if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
         errorMessage = 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.';
+      } else if (error.message?.includes('CORS')) {
+        errorMessage = 'Erro de CORS. Verifique as configurações do servidor.';
       }
     }
     
@@ -111,7 +129,7 @@ export const api = {
     nomeAgencia: string;
     cidade: string;
     nome: string;
-  }): Promise<ApiResponse<{ uid: string; email: string; customToken: string; message: string }>> {
+  }): Promise<ApiResponse<{ uid: string; email: string; message: string }>> {
     return request('/auth/signup', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -139,6 +157,12 @@ export const api = {
     return request('/cases', {
       method: 'POST',
       body: JSON.stringify(caso),
+    }, token);
+  },
+
+  async getCaseById(id: string, token?: string | null): Promise<ApiResponse<Case>> {
+    return request(`/cases/${id}`, {
+      method: 'GET',
     }, token);
   },
 

@@ -59,15 +59,27 @@ const corsOptions = {
       return;
     }
     
-    // Se allowedOrigins é string única, compara diretamente
+    // Se allowedOrigins é string única, verifica se é a origem ou se é um dos domínios de produção
     if (typeof allowedOrigins === 'string') {
-      callback(null, origin === allowedOrigins);
+      // Lista de domínios de produção que sempre devem ser permitidos
+      const productionOrigins = [
+        'https://ordem.konzuphub.com',
+        'https://anti-caos-konzup.pages.dev',
+      ];
+      const isCloudflarePreview = origin.endsWith('.pages.dev');
+      const isAllowed = origin === allowedOrigins || productionOrigins.includes(origin) || isCloudflarePreview;
+      callback(null, isAllowed);
       return;
     }
     
     callback(null, false);
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'content-type', 'Authorization', 'authorization', 'X-Requested-With', 'x-requested-with', 'Origin', 'Accept', 'Referer'],
+  exposedHeaders: ['Content-Type'],
+  maxAge: 86400, // 24 horas
+  optionsSuccessStatus: 204,
 };
 
 // Middlewares

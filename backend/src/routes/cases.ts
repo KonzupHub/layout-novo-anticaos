@@ -160,6 +160,45 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   }
 });
 
+router.get('/:id', async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const cnpj = req.user!.cnpj;
+
+    const repo = getRepository();
+    const caso = await repo.getCaseById(id);
+    
+    if (!caso) {
+      res.status(404).json({
+        ok: false,
+        error: 'Caso não encontrado',
+      });
+      return;
+    }
+
+    // Verifica se o caso pertence ao CNPJ do usuário
+    if (caso.cnpj !== cnpj) {
+      res.status(403).json({
+        ok: false,
+        error: 'Sem permissão para acessar este caso',
+      });
+      return;
+    }
+
+    res.status(200).json({
+      ok: true,
+      data: caso,
+    });
+  } catch (error: any) {
+    console.error('Erro ao buscar caso:', error);
+    res.status(500).json({
+      ok: false,
+      error: 'Erro ao buscar caso',
+      details: error.message,
+    });
+  }
+});
+
 router.patch('/:id', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;

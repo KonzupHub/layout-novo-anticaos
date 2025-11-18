@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { getTipoBadge, getStatusBadge } from "@/lib/mockCases";
-import type { Case, UpdateCaseDto } from "@/types/shared";
+import type { Case, UpdateCaseDto, CaseStatus } from "@/types/shared";
 import { ArrowLeft, FileText, Save } from "lucide-react";
 import {
   Select,
@@ -44,22 +44,20 @@ const CasoDetail = () => {
     if (!id || !token) return;
 
     try {
-      const response = await api.getCases(undefined, token);
+      const response = await api.getCaseById(id, token);
       if (response.ok && response.data) {
-        const foundCase = response.data.find((c) => c.id === id);
-        if (foundCase) {
-          setCaso(foundCase);
-          setStatus(foundCase.status);
-          setResponsavelNome(foundCase.responsavel.nome);
-          setNotas(foundCase.notas || "");
-          setPrazo(foundCase.prazo);
-        } else {
-          toast({
-            title: "Caso não encontrado",
-            variant: "destructive",
-          });
-          navigate("/dashboard/casos");
-        }
+        setCaso(response.data);
+        setStatus(response.data.status);
+        setResponsavelNome(response.data.responsavel.nome);
+        setNotas(response.data.notas || "");
+        setPrazo(response.data.prazo);
+      } else {
+        toast({
+          title: "Caso não encontrado",
+          description: response.error,
+          variant: "destructive",
+        });
+        navigate("/dashboard/casos");
       }
     } catch (error: any) {
       toast({
@@ -78,7 +76,7 @@ const CasoDetail = () => {
     setSaving(true);
     try {
       const updates: UpdateCaseDto = {
-        status: status as any,
+        status: status as CaseStatus,
         responsavel: { nome: responsavelNome },
         notas,
         prazo,

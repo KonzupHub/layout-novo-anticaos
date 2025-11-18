@@ -77,16 +77,14 @@ router.post('/signup', async (req: Request, res: Response) => {
       // Cria user
       await repo.createUser(userRecord.uid, cnpj, email, nome, 'user');
 
-      // Gera token customizado para retornar ao cliente
-      const customToken = await auth.createCustomToken(userRecord.uid);
-
+      // Não gera custom token (requer permissão iam.serviceAccounts.signBlob)
+      // O frontend fará login direto com email/senha após receber sucesso
       res.status(201).json({
         ok: true,
         data: {
           uid: userRecord.uid,
           email: userRecord.email,
-          customToken, // Cliente usa este token para fazer signInWithCustomToken no Firebase SDK
-          message: 'Conta criada com sucesso',
+          message: 'Conta criada com sucesso. Faça login com seu email e senha.',
         },
       });
     } catch (firestoreError: any) {
@@ -96,7 +94,11 @@ router.post('/signup', async (req: Request, res: Response) => {
     }
   } catch (error: any) {
     console.error('Erro ao criar conta:', error);
+    console.error('Código do erro:', error.code);
+    console.error('Mensagem do erro:', error.message);
+    console.error('Stack trace:', error.stack);
     
+    // Mapeia códigos específicos do Firebase Admin
     if (error.code === 'auth/email-already-exists') {
       res.status(409).json({
         ok: false,
@@ -104,11 +106,47 @@ router.post('/signup', async (req: Request, res: Response) => {
       });
       return;
     }
+    
+    if (error.code === 'auth/invalid-email') {
+      res.status(400).json({
+        ok: false,
+        error: 'Email inválido',
+      });
+      return;
+    }
+    
+    if (error.code === 'auth/weak-password') {
+      res.status(400).json({
+        ok: false,
+        error: 'Senha muito fraca',
+      });
+      return;
+    }
+    
+    if (error.code === 'auth/operation-not-allowed') {
+      res.status(500).json({
+        ok: false,
+        error: 'Operação não permitida. Verifique a configuração do Firebase Auth.',
+        details: error.message,
+      });
+      return;
+    }
+    
+    if (error.code === 'auth/insufficient-permission') {
+      res.status(500).json({
+        ok: false,
+        error: 'Erro de permissão no Firebase. Verifique as configurações do serviço.',
+        details: error.message,
+      });
+      return;
+    }
 
+    // Erro genérico com detalhes para debug
     res.status(500).json({
       ok: false,
       error: 'Erro ao criar conta',
-      details: error.message,
+      details: error.message || 'Erro desconhecido',
+      code: error.code || 'unknown',
     });
   }
 });
