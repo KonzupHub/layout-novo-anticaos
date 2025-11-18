@@ -223,9 +223,9 @@ const Casos = () => {
                     <SelectTrigger id="tipo">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="atraso">Atraso > 4h</SelectItem>
-                      <SelectItem value="cancelamento">Cancelamento</SelectItem>
+                      <SelectContent>
+                        <SelectItem value="atraso">Atraso &gt; 4h</SelectItem>
+                        <SelectItem value="cancelamento">Cancelamento</SelectItem>
                       <SelectItem value="overbooking">Overbooking</SelectItem>
                       <SelectItem value="mudanca_voo">Mudança de voo</SelectItem>
                     </SelectContent>
