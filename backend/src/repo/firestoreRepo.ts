@@ -76,9 +76,16 @@ export class FirestoreRepository implements IRepository {
     const casesRef = db.collection('cases');
     
     const now = new Date().toISOString();
+    
+    // Remove campos undefined para evitar erro do Firestore
+    // Firestore não aceita undefined como valor
+    const cleanCaseData = Object.fromEntries(
+      Object.entries(caseData).filter(([_, value]) => value !== undefined)
+    ) as CreateCaseDto;
+    
     const newCase: Omit<Case, 'id'> = {
       cnpj,
-      ...caseData,
+      ...cleanCaseData,
       createdAt: now,
       updatedAt: now,
     };
@@ -137,8 +144,14 @@ export class FirestoreRepository implements IRepository {
     const db = getFirestore();
     const caseRef = db.collection('cases').doc(id);
     
+    // Remove campos undefined para evitar erro do Firestore
+    // Firestore não aceita undefined como valor
+    const cleanUpdates = Object.fromEntries(
+      Object.entries(updates).filter(([_, value]) => value !== undefined)
+    ) as UpdateCaseDto;
+    
     const updateData = {
-      ...updates,
+      ...cleanUpdates,
       updatedAt: new Date().toISOString(),
     };
     
