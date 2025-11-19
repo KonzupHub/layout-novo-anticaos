@@ -1,5 +1,6 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import type { Case, Agency } from '../types/shared.js';
+import { interpretarCasoANAC } from './anacRules.js';
 
 /**
  * LAYOUT ATUAL DO PDF (antes da refatoração):
@@ -425,42 +426,69 @@ export async function generateCaseReport(
   drawSeparator();
 
   // ============================================
-  // SEÇÃO 6: CUMPRIMENTO DE PRAZOS ANAC
+  // SEÇÃO 6: CUMPRIMENTO DE PRAZOS ANAC (MVP 2.0)
   // ============================================
   drawSectionTitle('Cumprimento de Prazos ANAC', 12);
 
-  checkNewPage(60);
+  checkNewPage(80);
   
-  // Por enquanto, não há lógica específica de cálculo de prazos ANAC no backend
-  // Usa texto genérico baseado no status e prazo do caso
-  let anacText = '';
+  // MVP 2.0: Usa dados reais do motor de regras ANAC
+  const anacResumo = interpretarCasoANAC(caso);
   
-  if (caso.prazo) {
-    anacText = `O prazo para ação está sendo acompanhado no sistema. ${caso.prazo}. `;
-  }
-  
-  if (caso.status === 'em_andamento') {
-    anacText += 'O caso está em andamento e os prazos da ANAC estão sendo monitorados.';
-  } else if (caso.status === 'aguardando_resposta') {
-    anacText += 'Aguardando resposta da companhia aérea. Os prazos da ANAC continuam sendo monitorados.';
-  } else if (caso.status === 'encerrado') {
-    anacText += 'Caso encerrado. Todos os prazos foram cumpridos conforme a legislação vigente.';
-  } else {
-    anacText += 'Os prazos da ANAC estão sendo acompanhados no sistema conforme a Resolução 400.';
-  }
+  // Categoria do incidente
+  page.drawText(`Categoria: ${anacResumo.categoriaIncidente}`, {
+    x: marginX,
+    y: yPosition,
+    size: 10,
+    font: boldFont,
+    color: rgb(0.1, 0.1, 0.1),
+  });
+  yPosition -= 18;
 
-  const anacLines = wrapText(anacText, width - 2 * marginX, font, 9);
-  anacLines.forEach((line) => {
-    checkNewPage(30);
-    page.drawText(line, {
+  // Prazos importantes
+  if (anacResumo.prazosImportantes.length > 0) {
+    page.drawText('Prazos Importantes:', {
       x: marginX,
       y: yPosition,
       size: 9,
-      font: font,
+      font: boldFont,
       color: rgb(0.2, 0.2, 0.2),
     });
-    yPosition -= 12;
-  });
+    yPosition -= 15;
+
+    anacResumo.prazosImportantes.forEach((prazo) => {
+      checkNewPage(30);
+      const statusPrefix = prazo.status === 'vencido' ? '[VENCIDO]' : prazo.status === 'proximo_vencer' ? '[PROXIMO]' : '[OK]';
+      const statusText = prazo.status === 'vencido' ? 'VENCIDO' : prazo.status === 'proximo_vencer' ? 'PRÓXIMO' : 'DENTRO DO PRAZO';
+      const prazoText = `${statusPrefix} ${prazo.descricao} - ${prazo.diasRestantes !== undefined ? `${prazo.diasRestantes} dias restantes` : 'Imediato'} (${statusText})`;
+      
+      const prazoLines = wrapText(prazoText, width - 2 * marginX - 20, font, 9);
+      prazoLines.forEach((line) => {
+        page.drawText(line, {
+          x: marginX + 10,
+          y: yPosition,
+          size: 9,
+          font: font,
+          color: prazo.status === 'vencido' ? rgb(0.8, 0.1, 0.1) : prazo.status === 'proximo_vencer' ? rgb(0.8, 0.6, 0.1) : rgb(0.1, 0.6, 0.1),
+        });
+        yPosition -= 12;
+      });
+      yPosition -= 3;
+    });
+  } else {
+    const anacText = 'Os prazos da ANAC estão sendo acompanhados no sistema conforme a Resolução 400.';
+    const anacLines = wrapText(anacText, width - 2 * marginX, font, 9);
+    anacLines.forEach((line) => {
+      page.drawText(line, {
+        x: marginX,
+        y: yPosition,
+        size: 9,
+        font: font,
+        color: rgb(0.2, 0.2, 0.2),
+      });
+      yPosition -= 12;
+    });
+  }
 
   yPosition -= sectionSpacing;
   drawSeparator();
@@ -486,10 +514,13 @@ export async function generateCaseReport(
     borderWidth: 1.5,
   });
 
-  // Texto do resultado baseado no status
+  // MVP 2.0: Texto do resultado - usa resumoIa se disponível, senão usa texto padrão
   let resultadoText = '';
   
-  if (caso.status === 'encerrado') {
+  if (caso.resumoIa) {
+    // Usa resumo gerado pela IA
+    resultadoText = caso.resumoIa;
+  } else if (caso.status === 'encerrado') {
     const encerramentoDate = caso.updatedAt ? formatDate(caso.updatedAt) : 'data não disponível';
     resultadoText = `Caso encerrado em ${encerramentoDate}. `;
     if (caso.notas) {
@@ -503,9 +534,6 @@ export async function generateCaseReport(
       resultadoText += ` ${caso.notas}`;
     }
   }
-
-  // TODO: No futuro, esta frase pode ser gerada pela rota de IA /api/ia/sugerir-resumo
-  // usando os dados do caso (tipo, descrição das notas, prazo)
 
   const resultadoLines = wrapText(resultadoText, width - 2 * marginX - 20, font, 10);
   let lineY = resultadoY - 20;

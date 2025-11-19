@@ -3,7 +3,9 @@ import { AuthenticatedRequest, verifyAuth } from '../middleware/auth.js';
 import { getRepository } from '../repo/index.js';
 import { generateCaseReport } from '../services/pdf.js';
 import { uploadPDF, getSignedUrl } from '../services/storage.js';
+import { interpretarCasoANAC } from '../services/anacRules.js';
 import type { Case, CreateCaseDto, UpdateCaseDto } from '../types/shared.js';
+import type { AnacResumo } from '../types/anac.js';
 
 const router = Router();
 
@@ -95,9 +97,18 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
     const repo = getRepository();
     const cases = await repo.getCasesByCnpj(cnpj, filters);
 
+    // MVP 2.0: Adiciona interpretação ANAC para cada caso
+    const casesComANAC = cases.map(caso => {
+      const anacResumo = interpretarCasoANAC(caso);
+      return {
+        ...caso,
+        anacResumo,
+      };
+    });
+
     res.status(200).json({
       ok: true,
-      data: cases,
+      data: casesComANAC,
     });
   } catch (error: any) {
     console.error('Erro ao listar casos:', error);
@@ -121,6 +132,16 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
       status,
       responsavel,
       notas,
+      // Campos MVP 2.0
+      numeroVoo,
+      dataVoo,
+      horarioPrevisto,
+      horarioReal,
+      origem,
+      destino,
+      canalVenda,
+      consolidadora,
+      timelineIncidente,
     } = req.body;
 
     // Validação de campos obrigatórios
@@ -141,14 +162,30 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
       status,
       responsavel,
       notas,
+      // Campos MVP 2.0
+      numeroVoo,
+      dataVoo,
+      horarioPrevisto,
+      horarioReal,
+      origem,
+      destino,
+      canalVenda,
+      consolidadora,
+      timelineIncidente,
     };
 
     const repo = getRepository();
     const newCase = await repo.createCase(cnpj, caseData);
 
+    // MVP 2.0: Adiciona interpretação ANAC na resposta
+    const anacResumo = interpretarCasoANAC(newCase);
+
     res.status(201).json({
       ok: true,
-      data: newCase,
+      data: {
+        ...newCase,
+        anacResumo,
+      },
     });
   } catch (error: any) {
     console.error('Erro ao criar caso:', error);
@@ -185,9 +222,15 @@ router.get('/:id', async (req: AuthenticatedRequest, res: Response) => {
       return;
     }
 
+    // MVP 2.0: Adiciona interpretação ANAC
+    const anacResumo = interpretarCasoANAC(caso);
+
     res.status(200).json({
       ok: true,
-      data: caso,
+      data: {
+        ...caso,
+        anacResumo,
+      },
     });
   } catch (error: any) {
     console.error('Erro ao buscar caso:', error);
@@ -203,7 +246,24 @@ router.patch('/:id', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
     const cnpj = req.user!.cnpj;
-    const { status, responsavel, notas, prazo } = req.body;
+    const { 
+      status, 
+      responsavel, 
+      notas, 
+      prazo,
+      // Campos MVP 2.0
+      numeroVoo,
+      dataVoo,
+      horarioPrevisto,
+      horarioReal,
+      origem,
+      destino,
+      canalVenda,
+      consolidadora,
+      timelineIncidente,
+      resumoIa,
+      mensagemSugerida,
+    } = req.body;
 
     const repo = getRepository();
     
@@ -231,12 +291,38 @@ router.patch('/:id', async (req: AuthenticatedRequest, res: Response) => {
     if (responsavel !== undefined) updates.responsavel = responsavel;
     if (notas !== undefined) updates.notas = notas;
     if (prazo !== undefined) updates.prazo = prazo;
+    // Campos MVP 2.0
+    if (numeroVoo !== undefined) updates.numeroVoo = numeroVoo;
+    if (dataVoo !== undefined) updates.dataVoo = dataVoo;
+    if (horarioPrevisto !== undefined) updates.horarioPrevisto = horarioPrevisto;
+    if (horarioReal !== undefined) updates.horarioReal = horarioReal;
+    if (origem !== undefined) updates.origem = origem;
+    if (destino !== undefined) updates.destino = destino;
+    if (canalVenda !== undefined) updates.canalVenda = canalVenda;
+    if (consolidadora !== undefined) updates.consolidadora = consolidadora;
+    if (timelineIncidente !== undefined) updates.timelineIncidente = timelineIncidente;
+    if (resumoIa !== undefined) updates.resumoIa = resumoIa;
+    if (mensagemSugerida !== undefined) updates.mensagemSugerida = mensagemSugerida;
 
     const updatedCase = await repo.updateCase(id, updates);
+    
+    if (!updatedCase) {
+      res.status(404).json({
+        ok: false,
+        error: 'Caso não encontrado após atualização',
+      });
+      return;
+    }
+
+    // MVP 2.0: Adiciona interpretação ANAC na resposta
+    const anacResumo = interpretarCasoANAC(updatedCase);
 
     res.status(200).json({
       ok: true,
-      data: updatedCase,
+      data: {
+        ...updatedCase,
+        anacResumo,
+      },
     });
   } catch (error: any) {
     console.error('Erro ao atualizar caso:', error);
