@@ -125,7 +125,8 @@ then retry. If you enabled this API recently, wait a few minutes for the action 
 
 **Evidência**:
 - Logs do Cloud Run mostram erro explícito: "Vertex AI API has not been used in project ordem-em-dia before or it is disabled"
-- Comando `gcloud services list --enabled` não retorna nenhuma API relacionada a Vertex AI ou AI Platform
+- Comando `gcloud services list --enabled` não retorna a API `aiplatform.googleapis.com` habilitada
+- A API está **disponível** no projeto (aparece em `--available`), mas **não está habilitada**
 
 **Impacto**: Mesmo que o service account tivesse todas as permissões, a API precisa estar habilitada primeiro.
 
@@ -137,7 +138,10 @@ then retry. If you enabled this API recently, wait a few minutes for the action 
 - `roles/aiplatform.user` - Para usar modelos do Vertex AI
 - Ou `roles/vertexai.user` - Papel específico do Vertex AI (se disponível)
 
-**Status atual**: Não foi possível verificar os papéis específicos do Vertex AI porque a API não está habilitada. O service account padrão do Compute Engine geralmente tem apenas permissões básicas.
+**Status atual**: 
+- O service account tem o papel `roles/editor` (papel amplo do GCP)
+- **NÃO tem** o papel específico `roles/aiplatform.user` necessário para usar Vertex AI
+- Mesmo que a API fosse habilitada, o service account precisaria do papel adicional
 
 #### 3. Configuração do projeto (possível inconsistência)
 
@@ -261,11 +265,22 @@ const PROJECT_ID = process.env.GCLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID
 ### Passos que dependem de você (Tati) no Console
 
 1. **🔴 Habilitar API Vertex AI** no projeto `ordem-em-dia`
-2. **🟡 Dar papel `roles/aiplatform.user`** ao service account `336386698724-compute@developer.gserviceaccount.com`
-3. **🟡 Verificar variável `GCLOUD_PROJECT`** no Cloud Run (deve ser `ordem-em-dia`)
-4. **🟢 Verificar billing** do projeto
+   - URL: https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=ordem-em-dia
+   - Clicar em "Habilitar" e aguardar propagação (alguns minutos)
 
-**Tempo estimado**: 10-15 minutos (mais tempo de propagação da API)
+2. **🔴 Dar papel `roles/aiplatform.user`** ao service account `336386698724-compute@developer.gserviceaccount.com`
+   - **Status atual**: Service account tem apenas `roles/editor`, não tem permissão específica para Vertex AI
+   - **Como fazer**: Via Console (IAM & Admin > IAM) ou via CLI (comando fornecido na seção 4)
+   - **Importante**: Fazer isso APÓS habilitar a API
+
+3. **🟡 Verificar variável `GCLOUD_PROJECT`** no Cloud Run (deve ser `ordem-em-dia`)
+   - Verificar na configuração do serviço `konzup-hub-backend`
+   - Se não estiver definido, adicionar
+
+4. **🟢 Verificar billing** do projeto
+   - Confirmar que billing está habilitado (Vertex AI requer billing ativo)
+
+**Tempo estimado**: 10-15 minutos (mais tempo de propagação da API após habilitar)
 
 ### Recomendações para MVP 2.0 focado em ANAC
 
