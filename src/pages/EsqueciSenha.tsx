@@ -27,27 +27,29 @@ const EsqueciSenha = () => {
     setLoading(true);
     try {
       const auth = getAuth();
-      await sendPasswordResetEmail(auth, email);
+      // Configura continueUrl para redirecionar para login após reset
+      const continueUrl = `${window.location.origin}/login`;
+      await sendPasswordResetEmail(auth, email, {
+        url: continueUrl,
+        handleCodeInApp: false,
+      });
       setSent(true);
       toast({
         title: "E-mail enviado!",
-        description: "Verifique sua caixa de entrada para redefinir sua senha",
+        description: "Se este email estiver cadastrado, você receberá um link para redefinir sua senha, verifique também a pasta de spam.",
       });
     } catch (error: any) {
       console.error("Erro ao enviar e-mail:", error);
-      let message = "Erro ao enviar e-mail de recuperação";
+      console.error("Código do erro:", error.code);
+      console.error("Detalhes completos:", error);
       
-      if (error.code === "auth/user-not-found") {
-        message = "E-mail não cadastrado";
-      } else if (error.code === "auth/invalid-email") {
-        message = "E-mail inválido";
-      }
-      
+      // Mensagem genérica para o usuário, detalhes no console
       toast({
-        title: "Erro",
-        description: message,
-        variant: "destructive",
+        title: "E-mail enviado!",
+        description: "Se este email estiver cadastrado, você receberá um link para redefinir sua senha, verifique também a pasta de spam.",
       });
+      // Sempre mostra sucesso para não revelar se email existe ou não
+      setSent(true);
     } finally {
       setLoading(false);
     }

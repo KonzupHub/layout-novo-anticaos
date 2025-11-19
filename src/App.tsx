@@ -20,6 +20,7 @@ import Modelos from "./pages/dashboard/Modelos";
 import Relatorios from "./pages/dashboard/Relatorios";
 import Conta from "./pages/dashboard/Conta";
 import Ajuda from "./pages/dashboard/Ajuda";
+import CasoDetail from "./pages/dashboard/CasoDetail";
 
 const queryClient = new QueryClient();
 
@@ -40,7 +41,7 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<Hoje />} />
               <Route path="casos" element={<Casos />} />
-              <Route path="caso/:id" element={<div className="p-6">Detalhes do caso (em construção)</div>} />
+              <Route path="caso/:id" element={<CasoDetail />} />
               <Route path="importar" element={<Importar />} />
               <Route path="modelos" element={<Modelos />} />
               <Route path="relatorios" element={<Relatorios />} />

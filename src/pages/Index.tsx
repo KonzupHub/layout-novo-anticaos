@@ -624,9 +624,18 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <Separator className="mb-8 bg-white/10" />
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-white/70">© 2025 Konzup Hub</p>
+            <p className="text-sm text-white/70">
+              © 2025{" "}
+              <a 
+                href="https://konzuphub.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-white hover:text-white/80 transition-colors underline"
+              >
+                Konzup Hub
+              </a>
+            </p>
             <div className="flex gap-6 text-sm">
-              <Link to="/ajuda" className="text-white/70 hover:text-white transition-colors">Ajuda</Link>
               <Link to="/termos" className="text-white/70 hover:text-white transition-colors">Termos</Link>
               <Link to="/privacidade" className="text-white/70 hover:text-white transition-colors">Privacidade</Link>
               <a href="mailto:contato@konzup.com" className="text-white/70 hover:text-white transition-colors">Contato</a>

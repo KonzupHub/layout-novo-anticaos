@@ -13,6 +13,7 @@ import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { getTipoBadge, getStatusBadge } from "@/lib/mockCases";
+import { useSearch } from "@/contexts/SearchContext";
 import type { Case, CreateCaseDto, CaseType, CaseStatus } from "@/types/shared";
 import {
   Select,
@@ -33,11 +34,11 @@ import {
 const Casos = () => {
   const { token } = useAuth();
   const { toast } = useToast();
+  const { searchTerm } = useSearch();
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
   // Estados do formulário de criação
   const [formData, setFormData] = useState<CreateCaseDto>({
@@ -66,19 +67,22 @@ const Casos = () => {
 
     try {
       const response = await api.getCases(undefined, token);
-      if (response.ok && response.data) {
-        setCases(response.data);
+      if (response.ok) {
+        // Se response.data for undefined ou null, usa array vazio
+        setCases(response.data || []);
       } else {
+        // Só mostra erro se realmente houver erro HTTP (4xx, 5xx)
         toast({
           title: "Erro ao carregar casos",
-          description: response.error,
+          description: response.error || "Não foi possível carregar os casos",
           variant: "destructive",
         });
       }
     } catch (error: any) {
+      console.error("Erro ao carregar casos:", error);
       toast({
         title: "Erro ao carregar casos",
-        description: error.message,
+        description: error.message || "Erro de conexão com o servidor",
         variant: "destructive",
       });
     } finally {
@@ -226,9 +230,10 @@ const Casos = () => {
                       <SelectContent>
                         <SelectItem value="atraso">Atraso &gt; 4h</SelectItem>
                         <SelectItem value="cancelamento">Cancelamento</SelectItem>
-                      <SelectItem value="overbooking">Overbooking</SelectItem>
-                      <SelectItem value="mudanca_voo">Mudança de voo</SelectItem>
-                    </SelectContent>
+                        <SelectItem value="overbooking">Overbooking</SelectItem>
+                        <SelectItem value="mudanca_voo">Mudança de voo</SelectItem>
+                        <SelectItem value="extravio">Extravio</SelectItem>
+                      </SelectContent>
                   </Select>
                 </div>
                 <div>
@@ -299,17 +304,6 @@ const Casos = () => {
             </form>
           </DialogContent>
         </Dialog>
-      </div>
-
-      {/* Busca */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar por passageiro, localizador, fornecedor..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
       </div>
 
       {/* Lista de Casos */}

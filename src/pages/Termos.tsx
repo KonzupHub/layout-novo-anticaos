@@ -24,24 +24,16 @@ const Termos = () => {
           </CardHeader>
           <CardContent className="prose prose-sm max-w-none space-y-6">
             <section>
-              <h3 className="text-xl font-semibold mb-3">1. Ambiente de Demonstração</h3>
+              <h3 className="text-xl font-semibold mb-3">1. Uso da Plataforma</h3>
               <p className="text-muted-foreground">
-                Este é um ambiente de demonstração da plataforma Konzup Hub. Os dados e funcionalidades 
-                apresentados são fictícios e servem apenas para fins de avaliação.
-              </p>
-            </section>
-
-            <section>
-              <h3 className="text-xl font-semibold mb-3">2. Uso da Plataforma</h3>
-              <p className="text-muted-foreground">
-                A Konzup Hub é uma plataforma de gestão de pós-venda para incidentes aéreos. 
+                O Ordem em Dia é uma plataforma de gestão de pós-venda para incidentes aéreos desenvolvida pela Konzup Hub. 
                 Ao usar a plataforma, você concorda em utilizá-la de acordo com a lei 
-                e as normas da ANAC.
+                e as normas da ANAC para gestão de casos de atraso, cancelamento, overbooking, mudança de voo e extravio de bagagem.
               </p>
             </section>
 
             <section>
-              <h3 className="text-xl font-semibold mb-3">3. Propriedade Intelectual</h3>
+              <h3 className="text-xl font-semibold mb-3">2. Propriedade Intelectual</h3>
               <p className="text-muted-foreground">
                 Todo o conteúdo, design e funcionalidades da plataforma são de propriedade da Konzup Hub 
                 e protegidos por direitos autorais.
@@ -49,15 +41,15 @@ const Termos = () => {
             </section>
 
             <section>
-              <h3 className="text-xl font-semibold mb-3">4. Limitação de Responsabilidade</h3>
+              <h3 className="text-xl font-semibold mb-3">3. Limitação de Responsabilidade</h3>
               <p className="text-muted-foreground">
-                A Konzup Hub fornece ferramentas para organização e gestão, mas a responsabilidade 
-                final sobre o atendimento aos prazos e estar de acordo com a lei permanece com o usuário.
+                A Konzup Hub fornece ferramentas para organização e gestão de casos ANAC, mas a responsabilidade 
+                final sobre o atendimento aos prazos regulatórios e estar de acordo com a legislação permanece com o usuário.
               </p>
             </section>
 
             <section>
-              <h3 className="text-xl font-semibold mb-3">5. Modificações</h3>
+              <h3 className="text-xl font-semibold mb-3">4. Modificações</h3>
               <p className="text-muted-foreground">
                 Reservamo-nos o direito de modificar estes termos a qualquer momento. 
                 Alterações significativas serão comunicadas aos usuários.
@@ -65,7 +57,7 @@ const Termos = () => {
             </section>
 
             <section>
-              <h3 className="text-xl font-semibold mb-3">6. Contato</h3>
+              <h3 className="text-xl font-semibold mb-3">5. Contato</h3>
               <p className="text-muted-foreground">
                 Para dúvidas sobre estes termos, entre em contato em: contato@konzup.com
               </p>

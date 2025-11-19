@@ -1,5 +1,5 @@
-import { Bell, Search, LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Search, LogOut } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -11,10 +11,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth";
+import { useSearch } from "@/contexts/SearchContext";
 
 export const DashboardHeader = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout, user } = useAuth();
+  const { searchTerm, setSearchTerm } = useSearch();
+  
+  // Só mostra a busca nas páginas Hoje e Casos
+  const showSearch = location.pathname === '/dashboard' || location.pathname === '/dashboard/casos';
 
   const handleLogout = async () => {
     try {
@@ -30,22 +36,21 @@ export const DashboardHeader = () => {
       <div className="h-16 flex items-center px-6 gap-4">
         <SidebarTrigger />
         
-        <div className="flex-1 flex justify-center">
-          <div className="relative w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar casos ou passageiros..."
-              className="pl-10 bg-background/80 backdrop-blur-sm"
-            />
+        {showSearch && (
+          <div className="flex-1 flex justify-center">
+            <div className="relative w-full max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar casos ou passageiros..."
+                className="pl-10 bg-background/80 backdrop-blur-sm"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="relative hover:bg-primary/10 transition-colors">
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full animate-pulse" />
-          </Button>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-colors">

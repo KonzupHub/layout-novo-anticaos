@@ -1,4 +1,4 @@
-export type CaseType = 'atraso' | 'cancelamento' | 'overbooking' | 'mudanca_voo';
+export type CaseType = 'atraso' | 'cancelamento' | 'overbooking' | 'mudanca_voo' | 'extravio';
 export type CaseStatus = 'em_andamento' | 'aguardando_resposta' | 'documentacao_pendente' | 'encerrado';
 
 export interface Case {

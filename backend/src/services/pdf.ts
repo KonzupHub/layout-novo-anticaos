@@ -24,6 +24,7 @@ const TIPO_CATEGORIAS: Record<string, string> = {
   atraso: 'Atraso de voo',
   overbooking: 'Preterição ou Overbooking',
   mudanca_voo: 'Mudança de equipamento',
+  extravio: 'Extravio de bagagem',
   // Tipos adicionais podem ser mapeados aqui
 };
 
@@ -32,6 +33,7 @@ const TIPO_LABELS: Record<string, string> = {
   cancelamento: 'Cancelamento',
   overbooking: 'Overbooking',
   mudanca_voo: 'Mudança de voo',
+  extravio: 'Extravio',
 };
 
 const STATUS_LABELS: Record<string, string> = {

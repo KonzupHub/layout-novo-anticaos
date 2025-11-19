@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,11 +10,14 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useSearch } from "@/contexts/SearchContext";
+import { ComoFuncionaModal } from "@/components/ComoFuncionaModal";
 import type { Case } from "@/types/shared";
 
 const Hoje = () => {
   const { token } = useAuth();
   const { toast } = useToast();
+  const { searchTerm } = useSearch();
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,16 +29,19 @@ const Hoje = () => {
 
     try {
       const response = await api.getCases(undefined, token);
-      if (response.ok && response.data) {
-        setCases(response.data);
+      if (response.ok) {
+        // Se response.data for undefined ou null, usa array vazio
+        setCases(response.data || []);
       } else {
+        // Só mostra erro se realmente houver erro HTTP (4xx, 5xx)
         toast({
           title: "Erro ao carregar casos",
-          description: response.error,
+          description: response.error || "Não foi possível carregar os casos",
           variant: "destructive",
         });
       }
     } catch (error: unknown) {
+      console.error("Erro ao carregar casos:", error);
       const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
       toast({
         title: "Erro ao carregar casos",
@@ -77,6 +83,17 @@ const Hoje = () => {
     return createdDate >= semanaAtras;
   }).length;
 
+  // Filtrar casos pela busca
+  const filteredCases = useMemo(() => {
+    if (!searchTerm) return cases;
+    const search = searchTerm.toLowerCase();
+    return cases.filter((caso) =>
+      caso.passageiro.toLowerCase().includes(search) ||
+      caso.localizador.toLowerCase().includes(search) ||
+      caso.fornecedor.toLowerCase().includes(search)
+    );
+  }, [cases, searchTerm]);
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -88,8 +105,13 @@ const Hoje = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Dia de hoje</h2>
-        <p className="text-muted-foreground">Acompanhe os casos que precisam de atenção</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Dia de hoje</h2>
+            <p className="text-muted-foreground">Acompanhe os casos que precisam de atenção</p>
+          </div>
+          <ComoFuncionaModal />
+        </div>
       </div>
 
       {/* Cartões de Resumo */}
@@ -129,15 +151,19 @@ const Hoje = () => {
       </div>
 
       {/* Lista de Casos */}
-      {cases.length === 0 ? (
+      {filteredCases.length === 0 ? (
         <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-dashed border-primary/20">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <div className="rounded-full bg-primary/10 p-6 mb-4">
               <AlertCircle className="h-12 w-12 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Nenhum caso prioritário encontrado</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              {searchTerm ? "Nenhum caso encontrado" : "Nenhum caso prioritário encontrado"}
+            </h3>
             <p className="text-muted-foreground text-center max-w-md">
-              Não há casos que precisem de atenção imediata hoje.
+              {searchTerm
+                ? "Nenhum caso corresponde à sua busca."
+                : "Não há casos que precisem de atenção imediata hoje."}
             </p>
           </CardContent>
         </Card>
@@ -163,7 +189,7 @@ const Hoje = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {cases.map((caso) => {
+                  {filteredCases.map((caso) => {
                     const tipoBadge = getTipoBadge(caso.tipo);
                     const statusBadge = getStatusBadge(caso.status);
                     
@@ -209,7 +235,7 @@ const Hoje = () => {
 
             {/* Mobile Cards */}
             <div className="md:hidden space-y-4">
-              {cases.map((caso) => {
+              {filteredCases.map((caso) => {
                 const tipoBadge = getTipoBadge(caso.tipo);
                 const statusBadge = getStatusBadge(caso.status);
                 
