@@ -108,8 +108,10 @@ then retry. If you enabled this API recently, wait a few minutes for the action 
 
 **Configurações identificadas**:
 - **Modelo**: `gemini-2.5-flash`
-- **Projeto GCP**: Usa `process.env.GCLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'ordem-em-dia'`
-  - Em produção, deve estar usando `ordem-em-dia` (fallback)
+- **Projeto GCP (atual)**: Usa `process.env.GCLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'ordem-em-dia'`
+  - ⚠️ **PROBLEMA**: O código atual usa fallback para `ordem-em-dia`
+  - ✅ **CORREÇÃO NECESSÁRIA**: Deve usar `carbon-bonsai-395917` (onde existem créditos do Vertex AI)
+  - O Cloud Run roda em `ordem-em-dia`, mas as chamadas de Vertex AI devem usar `carbon-bonsai-395917`
 - **Região**: `us-central1`
 - **Credenciais**: Em produção, usa Application Default Credentials do Cloud Run
 
@@ -152,11 +154,15 @@ const PROJECT_ID = process.env.GCLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID
 ```
 
 **Análise**:
-- O código usa fallback para `ordem-em-dia`
-- Em produção no Cloud Run, `GCLOUD_PROJECT` deve estar definido como `ordem-em-dia`
-- O projeto correto parece ser `ordem-em-dia` (onde o Cloud Run está rodando)
+- O código atual usa fallback para `ordem-em-dia`
+- Em produção no Cloud Run, `GCLOUD_PROJECT` está definido como `ordem-em-dia` (projeto onde o serviço roda)
+- ⚠️ **PROBLEMA**: O Vertex AI precisa usar o projeto `carbon-bonsai-395917` (onde existem créditos)
+- **Solução**: Criar variável de ambiente específica `VERTEX_AI_PROJECT_ID=carbon-bonsai-395917` e usar no código
 
-**Recomendação**: Confirmar que a variável de ambiente `GCLOUD_PROJECT` está definida no Cloud Run como `ordem-em-dia`.
+**Recomendação**: 
+- Adicionar variável `VERTEX_AI_PROJECT_ID` no Cloud Run com valor `carbon-bonsai-395917`
+- Modificar `backend/src/services/gemini.ts` para usar `process.env.VERTEX_AI_PROJECT_ID || 'carbon-bonsai-395917'` em vez do fallback atual
+- Manter `GCLOUD_PROJECT=ordem-em-dia` para outras operações do Cloud Run
 
 ---
 
