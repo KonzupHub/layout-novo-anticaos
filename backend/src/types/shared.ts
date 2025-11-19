@@ -15,6 +15,18 @@ export interface Case {
     avatar?: string;
   };
   notas?: string;
+  // Campos adicionais MVP 2.0
+  numeroVoo?: string;
+  dataVoo?: string;
+  horarioPrevisto?: string;
+  horarioReal?: string;
+  origem?: string;
+  destino?: string;
+  canalVenda?: string;
+  consolidadora?: string;
+  timelineIncidente?: string;
+  resumoIa?: string;
+  mensagemSugerida?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -52,6 +64,16 @@ export interface CreateCaseDto {
     avatar?: string;
   };
   notas?: string;
+  // Campos adicionais MVP 2.0
+  numeroVoo?: string;
+  dataVoo?: string;
+  horarioPrevisto?: string;
+  horarioReal?: string;
+  origem?: string;
+  destino?: string;
+  canalVenda?: string;
+  consolidadora?: string;
+  timelineIncidente?: string;
 }
 
 export interface UpdateCaseDto {
@@ -62,4 +84,16 @@ export interface UpdateCaseDto {
   };
   notas?: string;
   prazo?: string;
+  // Campos adicionais MVP 2.0
+  numeroVoo?: string;
+  dataVoo?: string;
+  horarioPrevisto?: string;
+  horarioReal?: string;
+  origem?: string;
+  destino?: string;
+  canalVenda?: string;
+  consolidadora?: string;
+  timelineIncidente?: string;
+  resumoIa?: string;
+  mensagemSugerida?: string;
 }
