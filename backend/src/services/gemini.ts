@@ -2,6 +2,7 @@ import { VertexAI } from '@google-cloud/vertexai';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
+import type { AnacResumo } from '../types/anac.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,9 +17,9 @@ if (process.env.NODE_ENV !== 'production' && !process.env.GOOGLE_APPLICATION_CRE
   }
 }
 
-// Usa o projeto do arquivo de credenciais se disponível, senão usa ordem-em-dia
-// O arquivo JSON tem project_id: carbon-bonsai-395917, mas o Vertex AI pode estar no ordem-em-dia
-const PROJECT_ID = process.env.GCLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'ordem-em-dia';
+// MVP 2.0: Vertex AI sempre usa o projeto carbon-bonsai-395917 (onde existem créditos)
+// O Cloud Run roda em ordem-em-dia, mas as chamadas de Vertex AI devem usar carbon-bonsai-395917
+const VERTEX_AI_PROJECT_ID = process.env.VERTEX_AI_PROJECT_ID || 'carbon-bonsai-395917';
 const LOCATION = 'us-central1';
 const MODEL = 'gemini-2.5-flash';
 
@@ -29,7 +30,7 @@ const vertexAIOptions: {
   project: string;
   location: string;
 } = {
-  project: PROJECT_ID,
+  project: VERTEX_AI_PROJECT_ID,
   location: LOCATION,
 };
 
@@ -43,6 +44,7 @@ export interface DadosCaso {
   tipo: string;
   descricao: string;
   prazoDias: number;
+  anacResumo?: AnacResumo; // MVP 2.0: contexto de prazos ANAC
 }
 
 /**
@@ -52,21 +54,29 @@ export interface DadosCaso {
  */
 export async function sugerirResumoCaso(dadosDoCaso: DadosCaso): Promise<string> {
   try {
-    const { tipo, descricao, prazoDias } = dadosDoCaso;
+    const { tipo, descricao, prazoDias, anacResumo } = dadosDoCaso;
 
-    // Monta o prompt em português
-    const prompt = `Você é um assistente especializado em resumir casos de incidentes aéreos para agências de turismo.
+    // Monta o prompt em português com contexto ANAC se disponível
+    let contextoANAC = '';
+    if (anacResumo) {
+      const prazosTexto = anacResumo.prazosImportantes
+        .map(p => `${p.descricao} (${p.diasRestantes !== undefined ? `${p.diasRestantes} dias restantes` : 'imediato'})`)
+        .join(', ');
+      contextoANAC = `\n\nContexto Resolução 400 ANAC:\n- Categoria: ${anacResumo.categoriaIncidente}\n- Prazos: ${prazosTexto || 'Nenhum prazo específico'}\n- Direitos aplicáveis: ${anacResumo.direitosBasicos.slice(0, 2).join(', ')}`;
+    }
+
+    const prompt = `Você é um assistente especializado em resumir casos de incidentes aéreos para agências de turismo, seguindo a Resolução 400 da ANAC.
 
 Gere um resumo objetivo e profissional do seguinte caso:
 
 Tipo de incidente: ${tipo}
 Descrição: ${descricao}
-Prazo para ação: ${prazoDias} dias
+Prazo para ação: ${prazoDias} dias${contextoANAC}
 
 O resumo deve:
 - Ser claro e direto
 - Destacar os pontos principais do incidente
-- Mencionar o prazo de forma natural
+- Referenciar os prazos da Resolução 400 quando relevante
 - Ser escrito em português brasileiro
 - Não usar formatação (sem HTML, sem markdown, sem quebras de linha excessivas)
 - Ter no máximo 3 frases
