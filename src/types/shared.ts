@@ -15,6 +15,18 @@ export interface Case {
     avatar?: string;
   };
   notas?: string;
+  // Campos adicionais MVP 2.0
+  numeroVoo?: string;
+  dataVoo?: string;
+  horarioPrevisto?: string;
+  horarioReal?: string;
+  origem?: string;
+  destino?: string;
+  canalVenda?: string;
+  consolidadora?: string;
+  timelineIncidente?: string;
+  resumoIa?: string;
+  mensagemSugerida?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -52,6 +64,16 @@ export interface CreateCaseDto {
     avatar?: string;
   };
   notas?: string;
+  // Campos adicionais MVP 2.0
+  numeroVoo?: string;
+  dataVoo?: string;
+  horarioPrevisto?: string;
+  horarioReal?: string;
+  origem?: string;
+  destino?: string;
+  canalVenda?: string;
+  consolidadora?: string;
+  timelineIncidente?: string;
 }
 
 export interface UpdateCaseDto {
@@ -62,6 +84,18 @@ export interface UpdateCaseDto {
   };
   notas?: string;
   prazo?: string;
+  // Campos adicionais MVP 2.0
+  numeroVoo?: string;
+  dataVoo?: string;
+  horarioPrevisto?: string;
+  horarioReal?: string;
+  origem?: string;
+  destino?: string;
+  canalVenda?: string;
+  consolidadora?: string;
+  timelineIncidente?: string;
+  resumoIa?: string;
+  mensagemSugerida?: string;
 }
 
 export interface SignupDto {
@@ -71,4 +105,20 @@ export interface SignupDto {
   nomeAgencia: string;
   cidade: string;
   nome: string;
+}
+
+// MVP 2.0: Tipos para interpretação ANAC
+export interface PrazoANAC {
+  descricao: string;
+  prazoDias: number;
+  prazoLimite?: string;
+  status: 'dentro_prazo' | 'proximo_vencer' | 'vencido';
+  diasRestantes?: number;
+}
+
+export interface AnacResumo {
+  categoriaIncidente: string;
+  direitosBasicos: string[];
+  prazosImportantes: PrazoANAC[];
+  alertasOperacionais: string[];
 }

@@ -104,6 +104,59 @@ const Casos = () => {
       return;
     }
 
+    // MVP 2.0: Validações leves
+    // Localizador: 5-8 caracteres alfanuméricos
+    if (formData.localizador && !/^[A-Z0-9]{5,8}$/i.test(formData.localizador)) {
+      toast({
+        title: "Localizador inválido",
+        description: "O localizador deve ter entre 5 e 8 caracteres alfanuméricos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Número de voo: formato básico (ex: LA1234, G3100)
+    if (formData.numeroVoo && !/^[A-Z]{2,3}\d{3,4}$/i.test(formData.numeroVoo)) {
+      toast({
+        title: "Número de voo inválido",
+        description: "Formato esperado: 2-3 letras seguidas de 3-4 dígitos (ex: LA1234)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Data: formato YYYY-MM-DD ou DD/MM/YYYY
+    if (formData.dataVoo) {
+      const dateRegex = /^(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})$/;
+      if (!dateRegex.test(formData.dataVoo)) {
+        toast({
+          title: "Data inválida",
+          description: "Formato esperado: YYYY-MM-DD ou DD/MM/YYYY",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    // Horário: formato HH:MM
+    if (formData.horarioPrevisto && !/^\d{2}:\d{2}$/.test(formData.horarioPrevisto)) {
+      toast({
+        title: "Horário inválido",
+        description: "Formato esperado: HH:MM (ex: 14:30)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.horarioReal && !/^\d{2}:\d{2}$/.test(formData.horarioReal)) {
+      toast({
+        title: "Horário inválido",
+        description: "Formato esperado: HH:MM (ex: 14:30)",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setCreating(true);
     try {
       const response = await api.createCase(formData, token);

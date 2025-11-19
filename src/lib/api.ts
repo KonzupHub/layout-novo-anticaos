@@ -179,6 +179,14 @@ export const api = {
     }, token);
   },
 
+  // MVP 2.0: Gerar resumo com IA
+  async generateCaseSummary(id: string, token?: string | null): Promise<ApiResponse<{ resumo: string; mensagemSugerida?: string; erroIA?: string }>> {
+    return request('/ia/sugerir-resumo', {
+      method: 'POST',
+      body: JSON.stringify({ casoId: id }),
+    }, token);
+  },
+
   // Upload CSV
   async uploadCSV(file: File, token?: string | null): Promise<ApiResponse<{
     pendencias: Array<{

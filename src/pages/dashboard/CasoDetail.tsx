@@ -10,8 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { getTipoBadge, getStatusBadge } from "@/lib/mockCases";
-import type { Case, UpdateCaseDto, CaseStatus } from "@/types/shared";
-import { ArrowLeft, FileText, Save } from "lucide-react";
+import type { Case, UpdateCaseDto, CaseStatus, AnacResumo } from "@/types/shared";
+import { ArrowLeft, FileText, Save, Sparkles, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -29,12 +29,15 @@ const CasoDetail = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [generatingPDF, setGeneratingPDF] = useState(false);
+  const [generatingIA, setGeneratingIA] = useState(false);
 
   // Estados para edição
   const [status, setStatus] = useState<string>("");
   const [responsavelNome, setResponsavelNome] = useState("");
   const [notas, setNotas] = useState("");
   const [prazo, setPrazo] = useState("");
+  const [resumoIa, setResumoIa] = useState("");
+  const [mensagemSugerida, setMensagemSugerida] = useState("");
 
   useEffect(() => {
     loadCase();
@@ -51,6 +54,8 @@ const CasoDetail = () => {
         setResponsavelNome(response.data.responsavel.nome);
         setNotas(response.data.notas || "");
         setPrazo(response.data.prazo);
+        setResumoIa(response.data.resumoIa || "");
+        setMensagemSugerida(response.data.mensagemSugerida || "");
       } else {
         toast({
           title: "Caso não encontrado",
@@ -80,6 +85,8 @@ const CasoDetail = () => {
         responsavel: { nome: responsavelNome },
         notas,
         prazo,
+        resumoIa,
+        mensagemSugerida,
       };
 
       const response = await api.updateCase(id, updates, token);
@@ -137,6 +144,48 @@ const CasoDetail = () => {
       });
     } finally {
       setGeneratingPDF(false);
+    }
+  };
+
+  const handleGenerateIA = async () => {
+    if (!id || !token) return;
+
+    setGeneratingIA(true);
+    try {
+      const response = await api.generateCaseSummary(id, token);
+      if (response.ok && response.data) {
+        if (response.data.erroIA) {
+          toast({
+            title: "IA indisponível",
+            description: response.data.erroIA,
+            variant: "default",
+          });
+        } else {
+          if (response.data.resumo) {
+            setResumoIa(response.data.resumo);
+          }
+          if (response.data.mensagemSugerida) {
+            setMensagemSugerida(response.data.mensagemSugerida);
+          }
+          toast({
+            title: "Resumo gerado com sucesso",
+          });
+        }
+      } else {
+        toast({
+          title: "Erro ao gerar resumo",
+          description: response.error || "Não foi possível gerar o resumo com IA",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Erro ao gerar resumo",
+        description: "Não foi possível gerar o resumo. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setGeneratingIA(false);
     }
   };
 
@@ -270,6 +319,116 @@ const CasoDetail = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* MVP 2.0: Interpretação ANAC */}
+      {(caso as any).anacResumo && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5" />
+              Interpretação ANAC
+            </CardTitle>
+            <CardDescription>
+              Análise baseada na Resolução 400 da ANAC
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="font-semibold">Categoria do Incidente</Label>
+              <p className="text-sm mt-1">{(caso as any).anacResumo.categoriaIncidente}</p>
+            </div>
+
+            <div>
+              <Label className="font-semibold">Direitos Básicos Aplicáveis</Label>
+              <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                {(caso as any).anacResumo.direitosBasicos.map((direito: string, idx: number) => (
+                  <li key={idx}>{direito}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <Label className="font-semibold">Prazos Importantes</Label>
+              <div className="space-y-2 mt-2">
+                {(caso as any).anacResumo.prazosImportantes.map((prazo: any, idx: number) => (
+                  <div key={idx} className="flex items-center gap-2 text-sm p-2 bg-muted rounded">
+                    {prazo.status === 'vencido' && <AlertCircle className="h-4 w-4 text-red-600" />}
+                    {prazo.status === 'proximo_vencer' && <Clock className="h-4 w-4 text-yellow-600" />}
+                    {prazo.status === 'dentro_prazo' && <CheckCircle className="h-4 w-4 text-green-600" />}
+                    <span className="flex-1">
+                      {prazo.descricao} - {prazo.diasRestantes !== undefined ? `${prazo.diasRestantes} dias restantes` : 'Imediato'}
+                    </span>
+                    <Badge variant="outline" className={
+                      prazo.status === 'vencido' ? 'border-red-600 text-red-600' :
+                      prazo.status === 'proximo_vencer' ? 'border-yellow-600 text-yellow-600' :
+                      'border-green-600 text-green-600'
+                    }>
+                      {prazo.status === 'vencido' ? 'Vencido' :
+                       prazo.status === 'proximo_vencer' ? 'Próximo' :
+                       'Dentro do prazo'}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {(caso as any).anacResumo.alertasOperacionais.length > 0 && (
+              <div>
+                <Label className="font-semibold text-yellow-600">Alertas Operacionais</Label>
+                <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                  {(caso as any).anacResumo.alertasOperacionais.map((alerta: string, idx: number) => (
+                    <li key={idx} className="text-yellow-700">{alerta}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* MVP 2.0: Resumo com IA */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5" />
+            Resumo do Caso (IA)
+          </CardTitle>
+          <CardDescription>
+            Resumo gerado automaticamente com inteligência artificial
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="resumoIa">Resumo</Label>
+            <Textarea
+              id="resumoIa"
+              value={resumoIa}
+              onChange={(e) => setResumoIa(e.target.value)}
+              placeholder="O resumo será gerado automaticamente com IA ou pode ser preenchido manualmente"
+              rows={3}
+            />
+          </div>
+          <div>
+            <Label htmlFor="mensagemSugerida">Mensagem Sugerida para Cliente</Label>
+            <Textarea
+              id="mensagemSugerida"
+              value={mensagemSugerida}
+              onChange={(e) => setMensagemSugerida(e.target.value)}
+              placeholder="Mensagem sugerida para comunicação com o passageiro"
+              rows={2}
+            />
+          </div>
+          <Button
+            onClick={handleGenerateIA}
+            disabled={generatingIA}
+            variant="outline"
+            className="w-full"
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            {generatingIA ? "Gerando com IA..." : "Gerar Parecer com IA"}
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Status Atual */}
       <Card>
