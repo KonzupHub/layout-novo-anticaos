@@ -1,5 +1,5 @@
 import { Calendar, Briefcase, Upload, FileText, BarChart, Users, HelpCircle } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -25,6 +25,7 @@ const items = [
 
 export function AppSidebar() {
   const { open } = useSidebar();
+  const location = useLocation();
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
@@ -45,28 +46,33 @@ export function AppSidebar() {
           <SidebarGroupLabel className="text-muted-foreground px-4">Menu Principal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === "/dashboard"}
-                      className={({ isActive }) =>
-                        cn(
+              {items.map((item) => {
+                const isActive = item.url === "/dashboard" 
+                  ? location.pathname === "/dashboard"
+                  : location.pathname.startsWith(item.url);
+                
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={isActive}>
+                      <NavLink
+                        to={item.url}
+                        end={item.url === "/dashboard"}
+                        style={isActive ? { backgroundColor: 'hsl(var(--sidebar-accent) / 0.4)' } : undefined}
+                        className={cn(
                           "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all relative",
                           "w-full text-left",
                           isActive
-                            ? "!bg-sidebar-accent/40 text-sidebar-accent-foreground hover:!bg-sidebar-accent/50"
+                            ? "text-sidebar-accent-foreground hover:!bg-sidebar-accent/50"
                             : "text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                        )
-                      }
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                        )}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
