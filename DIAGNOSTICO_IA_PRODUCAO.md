@@ -115,7 +115,21 @@ Quando o frontend chama `/api/ia/sugerir-resumo`, o backend responde:
 
 ### Próximos Passos
 
-1. Fazer deploy do backend atualizado
-2. Monitorar logs para ver qual projeto está sendo usado efetivamente
-3. Se o problema persistir, considerar usar credenciais explícitas do projeto `carbon-bonsai-395917`
+1. ✅ Fazer deploy do backend atualizado - **CONCLUÍDO**
+   - Commit: `057e783` - "fix(backend): adiciona logs detalhados e detecção de projeto incorreto no Vertex AI"
+   - Revisão: `konzup-hub-backend-00013-lqf`
+   - URL: `https://konzup-hub-backend-336386698724.us-central1.run.app`
+   - Status: Deploy realizado com sucesso
+
+2. ⏳ Monitorar logs para ver qual projeto está sendo usado efetivamente
+   - Logs de configuração aparecem no startup do serviço
+   - Logs detalhados aparecem em cada chamada ao modelo Gemini
+   - Logs de erro incluem detecção de projeto incorreto
+
+3. ⏳ Testar chamada real em produção
+   - Aguardar chamada do frontend ou fazer teste autenticado
+   - Verificar resposta: `{ ok: true, resumo: "..." }` ou `{ ok: true, erroIA: "..." }`
+   - Analisar logs para identificar problema específico
+
+4. Se o problema persistir, considerar usar credenciais explícitas do projeto `carbon-bonsai-395917`
 
