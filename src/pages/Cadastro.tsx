@@ -6,9 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
+import { validarCNPJ, formatarCNPJ, limparCNPJ } from "@/utils/cnpj";
 
 const Cadastro = () => {
   const [nomeEmpresa, setNomeEmpresa] = useState("");
+  const [cnpj, setCnpj] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -19,13 +21,31 @@ const Cadastro = () => {
   const { signup } = useAuth();
   const { toast } = useToast();
 
+  const handleCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const valor = e.target.value;
+    const numeros = limparCNPJ(valor);
+    if (numeros.length <= 14) {
+      setCnpj(formatarCNPJ(numeros));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password || !nomeEmpresa || !confirmPassword) {
+    if (!email || !password || !nomeEmpresa || !confirmPassword || !cnpj) {
       toast({
         title: "Campos obrigatórios",
         description: "Preencha todos os campos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const cnpjLimpo = limparCNPJ(cnpj);
+    if (!validarCNPJ(cnpjLimpo)) {
+      toast({
+        title: "CNPJ inválido",
+        description: "Digite um CNPJ válido",
         variant: "destructive",
       });
       return;
@@ -51,15 +71,13 @@ const Cadastro = () => {
 
     setLoading(true);
     try {
-      // Gera valores padrão para campos não fornecidos
-      const cnpjPadrao = `00000000000000`;
       const cidadePadrao = `São Paulo`;
       const nomePadrao = email.split('@')[0]; // Usa parte do email como nome
       
       await signup({
         email,
         senha: password,
-        cnpj: cnpjPadrao,
+        cnpj: cnpjLimpo,
         nomeAgencia: nomeEmpresa,
         cidade: cidadePadrao,
         nome: nomePadrao,
@@ -92,6 +110,22 @@ const Cadastro = () => {
                 placeholder="Sua empresa"
                 required
               />
+            </div>
+
+            <div>
+              <Label htmlFor="cnpj">CNPJ</Label>
+              <Input
+                id="cnpj"
+                type="text"
+                value={cnpj}
+                onChange={handleCnpjChange}
+                placeholder="00.000.000/0000-00"
+                required
+                maxLength={18}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Digite apenas números. A formatação será aplicada automaticamente.
+              </p>
             </div>
 
             <div>
