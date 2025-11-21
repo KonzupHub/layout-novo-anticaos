@@ -40,11 +40,25 @@ async function request<T>(
       ok: response.ok 
     });
 
+    // Log específico para endpoint de IA (antes de processar)
+    if (endpoint === '/ia/sugerir-resumo') {
+      console.log('[API IA] Endpoint:', endpoint);
+      console.log('[API IA] Status HTTP:', response.status);
+      console.log('[API IA] Status OK:', response.ok);
+      console.log('[API IA] Content-Type:', response.headers.get('content-type'));
+    }
+
     // Verifica se a resposta é JSON
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
       console.error('[API] Resposta não é JSON:', { contentType, text: text.substring(0, 200) });
+      
+      // Log específico para IA
+      if (endpoint === '/ia/sugerir-resumo') {
+        console.error('[API IA] Resposta não é JSON. Status:', response.status, 'Texto:', text.substring(0, 200));
+      }
+      
       return {
         ok: false,
         error: 'Erro de conexão com o servidor',
@@ -54,6 +68,11 @@ async function request<T>(
 
     const data = await response.json() as ApiResponse<T>;
     console.log('[API] Dados parseados:', data);
+
+    // Log específico para endpoint de IA (depois de parsear)
+    if (endpoint === '/ia/sugerir-resumo') {
+      console.log('[API IA] JSON retornado:', JSON.stringify(data, null, 2));
+    }
 
     if (!response.ok) {
       return {
@@ -66,6 +85,17 @@ async function request<T>(
     return data;
   } catch (error: unknown) {
     console.error('[API] Erro na requisição:', error);
+    
+    // Log específico para endpoint de IA
+    if (endpoint === '/ia/sugerir-resumo') {
+      console.error('[API IA] Erro capturado:', error);
+      if (error instanceof Error) {
+        console.error('[API IA] Mensagem:', error.message);
+        console.error('[API IA] Nome:', error.name);
+        console.error('[API IA] Stack:', error.stack?.substring(0, 500));
+      }
+    }
+    
     let errorMessage = 'Erro de conexão com o servidor';
     let errorDetails = '';
     

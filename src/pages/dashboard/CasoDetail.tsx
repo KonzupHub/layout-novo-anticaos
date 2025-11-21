@@ -153,36 +153,36 @@ const CasoDetail = () => {
     setGeneratingIA(true);
     try {
       const response = await api.generateCaseSummary(id, token);
-      if (response.ok && response.data) {
-        if (response.data.erroIA) {
-          toast({
-            title: "IA indisponível",
-            description: response.data.erroIA,
-            variant: "default",
-          });
-        } else {
-          if (response.data.resumo) {
-            setResumoIa(response.data.resumo);
-          }
-          if (response.data.mensagemSugerida) {
-            setMensagemSugerida(response.data.mensagemSugerida);
-          }
-          toast({
-            title: "Resumo gerado com sucesso",
-          });
+      
+      // Sucesso: IA funcionou e retornou dados válidos
+      if (response.ok && response.data && response.data.resumo) {
+        setResumoIa(response.data.resumo);
+        if (response.data.mensagemSugerida) {
+          setMensagemSugerida(response.data.mensagemSugerida);
         }
-      } else {
         toast({
-          title: "Erro ao gerar resumo",
-          description: response.error || "Não foi possível gerar o resumo com IA",
-          variant: "destructive",
+          title: "Resumo gerado com sucesso",
+        });
+      } else if (response.ok && response.data && response.data.mensagemSugerida && !response.data.resumo) {
+        // Apenas mensagem sugerida, sem resumo
+        setMensagemSugerida(response.data.mensagemSugerida);
+        toast({
+          title: "Resumo gerado com sucesso",
+        });
+      } else {
+        // Qualquer outro caso: erro, erroIA, sem dados, etc.
+        toast({
+          title: "IA indisponível no momento",
+          description: "O caso continua salvo normalmente.",
+          variant: "default",
         });
       }
     } catch (error: any) {
+      // Qualquer erro de rede, CORS ou exceção
       toast({
-        title: "Erro ao gerar resumo",
-        description: "Não foi possível gerar o resumo. Tente novamente.",
-        variant: "destructive",
+        title: "IA indisponível no momento",
+        description: "O caso continua salvo normalmente.",
+        variant: "default",
       });
     } finally {
       setGeneratingIA(false);
