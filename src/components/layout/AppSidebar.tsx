@@ -56,7 +56,7 @@ export function AppSidebar() {
                           "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all relative",
                           "w-full text-left",
                           isActive
-                            ? "bg-sidebar-accent/40 text-sidebar-accent-foreground"
+                            ? "!bg-sidebar-accent/40 text-sidebar-accent-foreground hover:!bg-sidebar-accent/50"
                             : "text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                         )
                       }
