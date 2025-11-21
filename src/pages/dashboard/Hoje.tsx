@@ -86,12 +86,15 @@ const Hoje = () => {
   // Filtrar casos pela busca
   const filteredCases = useMemo(() => {
     if (!searchTerm) return cases;
-    const search = searchTerm.toLowerCase();
-    return cases.filter((caso) =>
-      caso.passageiro.toLowerCase().includes(search) ||
-      caso.localizador.toLowerCase().includes(search) ||
-      caso.fornecedor.toLowerCase().includes(search)
-    );
+    const search = searchTerm.toLowerCase().trim();
+    return cases.filter((caso) => {
+      const passageiro = (caso.passageiro || '').toLowerCase();
+      const localizador = (caso.localizador || '').toLowerCase();
+      const fornecedor = (caso.fornecedor || '').toLowerCase();
+      return passageiro.includes(search) ||
+             localizador.includes(search) ||
+             fornecedor.includes(search);
+    });
   }, [cases, searchTerm]);
 
   if (loading) {
