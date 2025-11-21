@@ -156,17 +156,21 @@ router.post('/sugerir-resumo', verifyAuth, async (req: AuthenticatedRequest, res
       // Retorna erro mas não quebra o fluxo
       res.status(200).json({
         ok: true,
-        resumo: null,
-        mensagemSugerida: null,
-        erroIA: mensagemErro,
+        data: {
+          resumo: null,
+          mensagemSugerida: null,
+          erroIA: mensagemErro,
+        },
       });
       return;
     }
 
     res.status(200).json({
       ok: true,
-      resumo,
-      mensagemSugerida,
+      data: {
+        resumo,
+        mensagemSugerida,
+      },
     });
   } catch (error: unknown) {
     console.error('Erro geral ao processar requisição de IA:', error);
