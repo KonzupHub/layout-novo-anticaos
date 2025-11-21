@@ -23,9 +23,20 @@ const VERTEX_AI_PROJECT_ID = process.env.VERTEX_AI_PROJECT_ID || 'carbon-bonsai-
 const LOCATION = 'us-central1';
 const MODEL = 'gemini-2.5-flash';
 
+// Log da configuração para diagnóstico
+console.log('[Vertex AI] Configuração:', {
+  project: VERTEX_AI_PROJECT_ID,
+  location: LOCATION,
+  model: MODEL,
+  nodeEnv: process.env.NODE_ENV,
+  hasCredentials: !!process.env.GOOGLE_APPLICATION_CREDENTIALS,
+});
+
 // Inicializa o cliente Vertex AI
-// Em produção, usa Application Default Credentials automaticamente
-// Em desenvolvimento, usa GOOGLE_APPLICATION_CREDENTIALS se configurado
+// IMPORTANTE: Em produção no Cloud Run, o SDK pode usar as Application Default Credentials
+// do projeto onde o Cloud Run está rodando (ordem-em-dia), mas precisamos forçar o uso
+// do projeto correto (carbon-bonsai-395917) através do parâmetro project.
+// O SDK deve respeitar o parâmetro project, mas vamos garantir com logs e tratamento de erro.
 const vertexAIOptions: {
   project: string;
   location: string;
@@ -83,10 +94,24 @@ O resumo deve:
 
 Resumo:`;
 
+    // Log antes de chamar o modelo para diagnóstico
+    console.log('[Vertex AI] Chamando modelo Gemini:', {
+      project: VERTEX_AI_PROJECT_ID,
+      location: LOCATION,
+      model: MODEL,
+      promptLength: prompt.length,
+    });
+
     // Chama o modelo Gemini
     const result = await model.generateContent(prompt);
     const response = result.response;
     const texto = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    
+    console.log('[Vertex AI] Resposta recebida:', {
+      hasText: !!texto,
+      textLength: texto.length,
+      candidatesCount: response.candidates?.length || 0,
+    });
     
     if (!texto) {
       throw new Error('Resposta vazia do modelo Gemini');
@@ -110,18 +135,39 @@ Resumo:`;
 
     return resumo;
   } catch (error: unknown) {
-    console.error('Erro ao gerar resumo com Gemini:', error);
+    // Log detalhado do erro para diagnóstico
+    console.error('[Vertex AI] Erro ao gerar resumo com Gemini:', error);
+    console.error('[Vertex AI] Detalhes do erro:', {
+      project: VERTEX_AI_PROJECT_ID,
+      location: LOCATION,
+      model: MODEL,
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+      errorMessage: error instanceof Error ? error.message : String(error),
+      errorStack: error instanceof Error ? error.stack?.substring(0, 500) : undefined,
+      // Verifica se o erro menciona projeto incorreto
+      mentionsWrongProject: error instanceof Error && (
+        error.message.includes('ordem-em-dia') || 
+        error.message.includes('336386698724')
+      ),
+    });
     
     if (error instanceof Error) {
       // Erros específicos do Vertex AI
-      if (error.message.includes('PERMISSION_DENIED')) {
+      if (error.message.includes('PERMISSION_DENIED') || error.message.includes('403')) {
+        console.error('[Vertex AI] Erro de permissão detectado. Verifique se a service account tem roles/aiplatform.user no projeto', VERTEX_AI_PROJECT_ID);
         throw new Error('Sem permissão para acessar o Vertex AI. Verifique as credenciais.');
       }
-      if (error.message.includes('NOT_FOUND')) {
+      if (error.message.includes('NOT_FOUND') || error.message.includes('404')) {
+        console.error('[Vertex AI] Erro de modelo/projeto não encontrado. Verifique se o modelo', MODEL, 'existe no projeto', VERTEX_AI_PROJECT_ID);
         throw new Error('Modelo ou projeto não encontrado. Verifique a configuração.');
       }
-      if (error.message.includes('QUOTA_EXCEEDED')) {
+      if (error.message.includes('QUOTA_EXCEEDED') || error.message.includes('429')) {
         throw new Error('Cota do Vertex AI excedida.');
+      }
+      // Verifica se o erro menciona projeto incorreto
+      if (error.message.includes('ordem-em-dia') || error.message.includes('336386698724')) {
+        console.error('[Vertex AI] ATENÇÃO: Erro menciona projeto ordem-em-dia. O SDK pode estar usando ADC do projeto errado.');
+        throw new Error('Configuração de projeto incorreta. O SDK está usando o projeto ordem-em-dia em vez de carbon-bonsai-395917.');
       }
     }
     
